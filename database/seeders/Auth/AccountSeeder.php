@@ -18,7 +18,7 @@ class AccountSeeder extends Seeder
             'email' => 'distrostudiodev@gmail.com',
             'account_status' => 2,
             'password' => Hash::make('superadmin123'),
-            'register_at' => Carbon::now('Asia/Jakarta')
+            'register_at' => Carbon::now(env('APP_TIMEZONE'))
         ]);
         
         $super_admin_account->assignRole('Super Admin');

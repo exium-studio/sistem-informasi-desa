@@ -3,9 +3,11 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class DateHelper
 {
+    //! Format Tanggal Indonesia
     /**
      * Konversi format tanggal ke format Indonesia.
      *
@@ -31,7 +33,7 @@ class DateHelper
         switch ($formatType) {
             case 1: // Senin, 1 Januari 2025
                 return "$hari, $tanggal $bulan $tahun";
-            
+
             case 2: // Senin, 1 Januari 2025 pukul 15:30 WIB
                 return "$hari, $tanggal $bulan $tahun pukul $jamMenit WIB";
 
@@ -41,11 +43,34 @@ class DateHelper
             case 4: // 01-01-2025
                 return $carbonDate->translatedFormat('d-m-Y');
 
-			case 5: // 01/01/2025
-				return $carbonDate->translatedFormat('d/m/Y');
+            case 5: // 01/01/2025
+                return $carbonDate->translatedFormat('d/m/Y');
 
             default:
                 return "$tanggal $bulan $tahun";
         }
     }
+    //! Format Tanggal Indonesia
+
+    //? Konversi Timezone (kalo diperlukan)
+    /**
+     * Konversi datetime ke UTC sebelum disimpan ke database
+     */
+    public static function toUTC($datetime)
+    {
+        return self::parseDatetime($datetime)->setTimezone('UTC');
+    }
+
+    /**
+     * Pastikan datetime bisa diubah ke format yang benar
+     */
+    private static function parseDatetime($datetime, $timezone = null)
+    {
+        if ($datetime instanceof Carbon) {
+            return $datetime;
+        }
+
+        return Carbon::parse($datetime, $timezone);
+    }
+    //? Konversi Timezone
 }

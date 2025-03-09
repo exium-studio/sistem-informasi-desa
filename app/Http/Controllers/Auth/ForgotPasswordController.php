@@ -34,7 +34,7 @@ class ForgotPasswordController extends Controller
         }
 
         $otp = rand(100000, 999999); // Generate OTP 6 digit
-        $expiresAt = Carbon::now('Asia/Jakarta')->addMinutes(5); // OTP berlaku 10 menit
+        $expiresAt = now()->addMinutes(5); // OTP berlaku 10 menit
 
         Otp::updateOrCreate(
             ['user_id' => $user->id],
@@ -98,7 +98,7 @@ class ForgotPasswordController extends Controller
             );
         }
 
-        if (!$otpRecord || Carbon::now('Asia/Jakarta')->greaterThan($otpRecord->expired_date)) {
+        if (now()->greaterThan($otpRecord->expired_date)) {
             Log::info('| Auth | - Verify OTP failed: OTP expired for email: ' . $user->email);
             return response()->json(
                 new WithoutDataResource(

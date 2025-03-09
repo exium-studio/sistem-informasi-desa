@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,22 +17,22 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestampTz('email_verified_at')->nullable();
             $table->string('password');
             $table->string('profile_photo')->nullable();
             $table->integer('account_status')->default(1); // 1 = inactive, 2 = active, 3 = deactive
-            $table->string('register_at');
-            $table->string('deactivate_at')->nullable();
-            $table->string('last_login')->nullable();
+            $table->timestampTz('register_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestampTz('deactivate_at')->nullable();
+            $table->timestampTz('last_login')->nullable();
             $table->rememberToken();
-            $table->softDeletes();
-            $table->timestamps();
+            $table->softDeletesTz();
+            $table->timestampsTz();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
-            $table->timestamp('created_at')->nullable();
+            $table->timestampTz('created_at')->nullable();
         });
 
         Schema::create('sessions', function (Blueprint $table) {
