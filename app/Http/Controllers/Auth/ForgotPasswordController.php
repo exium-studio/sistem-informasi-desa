@@ -9,7 +9,6 @@ use App\Http\Resources\Templates\Response\WithoutDataResource;
 use App\Mail\Auth\SendingOTPMail;
 use App\Models\Otp;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
