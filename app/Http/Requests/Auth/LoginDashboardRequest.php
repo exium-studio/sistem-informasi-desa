@@ -34,7 +34,7 @@ class LoginDashboardRequest extends FormRequest
     public function messages()
     {
         return [
-            'email.required' => 'Silahkan masukkan email anda terlebih dahulu.',
+            'email.required' => 'Silahkan masukkan email atau username anda terlebih dahulu.',
             'password.required' => 'Kolom password wajib diisi terlebih dahulu.',
             'password.min' => 'Minimum password yang harus diisi adalah 4 karakter.',
         ];
