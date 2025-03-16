@@ -9,19 +9,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Otp extends Model
+class FamilyCard extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 
-    protected $table = 'otps';
+    protected $table = 'family_cards';
 
     protected $casts = [
         'user_id' => 'integer',
-        'expired_date' => 'datetime:UTC',
+        'village' => 'array',
+        'sub_district' => 'array',
+        'city_regency' => 'array',
+        'province' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
+        'delete_at' => 'datetime:UTC',
     ];
 
     /**
@@ -44,7 +48,7 @@ class Otp extends Model
     }
 
     /**
-     * Get the user that owns the Otp
+     * Get the user (kepala keluarga) that owns the FamilyCard
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

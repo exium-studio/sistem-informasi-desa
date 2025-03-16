@@ -6,22 +6,20 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Otp extends Model
+class RelationshipStatus extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 
-    protected $table = 'otps';
+    protected $table = 'relationship_statuses';
 
     protected $casts = [
-        'user_id' => 'integer',
-        'expired_date' => 'datetime:UTC',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
+        'delete_at' => 'datetime:UTC',
     ];
 
     /**
@@ -41,15 +39,5 @@ class Otp extends Model
             get: fn($value) => Carbon::parse($value)->setTimezone('UTC'),
             set: fn($value) => Carbon::parse($value)->setTimezone('UTC')
         );
-    }
-
-    /**
-     * Get the user that owns the Otp
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
