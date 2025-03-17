@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('family_cards', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Kepala Keluarga
-            $table->string('no_kk', 16)->unique();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade'); // Kepala Keluarga
+            $table->string('no_kk', 16)->nullable()->unique();
             $table->string('rt', 3);
             $table->string('rw', 3);
             $table->jsonb('village'); // Kelurahan

@@ -12,8 +12,8 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        $created_at = Carbon::now(env('APP_TIMEZONE'))->subDays(rand(1, 30));
-        $updated_at = Carbon::now(env('APP_TIMEZONE'))->subDays(rand(1, 30));
+        $created_at = Carbon::now()->subDays(rand(1, 30));
+        $updated_at = Carbon::now()->subDays(rand(1, 30));
 
         $SuperAdmin = Role::create([
             'name' => 'Super Admin',
@@ -24,15 +24,15 @@ class RoleSeeder extends Seeder
         ]);
 
         $KepalaDesa = Role::create([
-            'name' => 'Kepala Desa',
-            'description' => 'Ini adalah role Kepala Desa',
+            'name' => 'Lurah',
+            'description' => 'Ini adalah role Lurah',
             'guard_name' => 'web',
             'created_at' => $created_at,
             'updated_at' => $updated_at
         ]);
 
         $RW = Role::create([
-            'name' => 'RW',
+            'name' => 'Kepala RW',
             'description' => 'Ini adalah role RW',
             'guard_name' => 'web',
             'created_at' => $created_at,
@@ -40,7 +40,7 @@ class RoleSeeder extends Seeder
         ]);
 
         $RT = Role::create([
-            'name' => 'RT',
+            'name' => 'Kepala RT',
             'description' => 'Ini adalah role RT',
             'guard_name' => 'web',
             'created_at' => $created_at,
