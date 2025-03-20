@@ -32,7 +32,8 @@ class LoginController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
                     'Login Gagal',
-                    'Password atau username/email yang anda masukkan tidak valid, silahkan periksa kembali dan pastikan akun anda sudah terdaftar.'
+                    'Password atau username/email yang anda masukkan tidak valid, silahkan periksa kembali dan pastikan akun anda sudah terdaftar.',
+                    'INVALID_CREDENTIALS'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -45,11 +46,29 @@ class LoginController extends Controller
             Auth::logout();
             Log::info("| Auth | - Login failed for email: {$credential['email']}, User is not active since {$user->deactivate_at}");
 
-            $message = ($user->account_status == 1)
-                ? "Kami mendeteksi bahwa akun anda belum diaktifkan sejak " . DateHelper::formatTanggalIndonesia($user->created_at, 1) . ", silahkan hubungi admin untuk melakukan aktivasi."
-                : "Kami mendeteksi bahwa akun anda telah dinonaktifkan sejak " . DateHelper::formatTanggalIndonesia($user->deactivate_at, 1) . ", silahkan hubungi admin untuk melakukan aktivasi kembali.";
+            if ($user->account_status == 1) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_UNAUTHORIZED,
+                        'Akun Belum Aktif',
+                        "Kami mendeteksi bahwa akun anda belum diaktifkan sejak " . DateHelper::formatTanggalIndonesia($user->created_at, 1) .
+                            ", silahkan hubungi admin untuk melakukan aktivasi.",
+                        'ACCOUNT_NOT_ACTIVATED'
+                    ),
+                    Response::HTTP_UNAUTHORIZED
+                );
+            }
 
-            return new WithoutDataResource(Response::HTTP_UNAUTHORIZED, 'Akun Tidak Aktif', $message);
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_UNAUTHORIZED,
+                    'Akun Nonaktif',
+                    "Kami mendeteksi bahwa akun anda telah dinonaktifkan sejak " . DateHelper::formatTanggalIndonesia($user->deactivate_at, 1) .
+                        ", silahkan hubungi admin untuk melakukan aktivasi kembali.",
+                    'ACCOUNT_DEACTIVATED'
+                ),
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         $user->update(['last_login' => now()]);
@@ -72,7 +91,8 @@ class LoginController extends Controller
                     'role' => $filteredRoles,
                     'permission' => $filteredRoles ? $roles->permissions->pluck('id') : [],
                     'token' => $token
-                ]
+                ],
+                'LOGIN_SUCCESS'
             ),
             Response::HTTP_OK
         );
@@ -86,7 +106,8 @@ class LoginController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
                     'Akses Ditolak',
-                    'Maaf, akun pengguna terkait tidak ditemukan.'
+                    'Maaf, akun pengguna terkait tidak ditemukan.',
+                    'ACCOUNT_NOT_FOUND'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -106,7 +127,8 @@ class LoginController extends Controller
                     'user' => $user,
                     'roles' => $filteredRoles,
                     'permissions' => $filteredRoles ? $roles->permissions->pluck('id') : []
-                ]
+                ],
+                'SUCCESS_GET_USER_INFO'
             ),
             Response::HTTP_OK
         );
@@ -120,7 +142,8 @@ class LoginController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
                     'Logout Gagal',
-                    'Anda tidak memiliki sesi login yang aktif.'
+                    'Anda tidak memiliki sesi login yang aktif.',
+                    'NO_ACTIVE_SESSION'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -139,7 +162,8 @@ class LoginController extends Controller
             new WithoutDataResource(
                 Response::HTTP_OK,
                 'Logout Berhasil',
-                'Anda berhasil melakukan logout.'
+                'Anda berhasil melakukan logout.',
+                'LOGOUT_SUCCESS'
             ),
             Response::HTTP_OK
         );

@@ -12,7 +12,7 @@ class WithoutDataResource extends JsonResource
     public $title;
     public $description;
 
-    public function __construct($status, $case, $title, $description)
+    public function __construct($status, $case = null, $title, $description)
     {
         parent::__construct(null);
         $this->status = $status;
@@ -23,14 +23,15 @@ class WithoutDataResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        return [
+        return array_filter([
             'status' => $this->status,
             'message' => [
                 'title' => $this->title,
                 'description' => $this->description,
             ],
-            // Tambahan baru, jangan lupa modifikasi dicontroller
-            'case' => $this->case
-        ];
+            'case' => $this->case, // Hanya tampil jika tidak null
+        ], function ($value) {
+            return $value !== null;
+        });
     }
 }

@@ -13,7 +13,7 @@ class WithDataResource extends JsonResource
     public $description;
     public $data;
 
-    public function __construct($status, $case, $title, $description, $data = null)
+    public function __construct($status, $case = null, $title, $description, $data = null)
     {
         parent::__construct($data);
         $this->status = $status;
@@ -25,15 +25,16 @@ class WithDataResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        return [
+        return array_filter([
             'status' => $this->status,
             'message' => [
                 'title' => $this->title,
                 'description' => $this->description,
                 'data' => $this->data
             ],
-            // Tambahan baru, jangan lupa modifikasi dicontroller
-            'case' => $this->case
-        ];
+            'case' => $this->case, // Hanya tampil jika tidak null
+        ], function ($value) {
+            return $value !== null;
+        });
     }
 }

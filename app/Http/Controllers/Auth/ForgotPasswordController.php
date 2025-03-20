@@ -26,7 +26,8 @@ class ForgotPasswordController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_NOT_FOUND,
                     'Akun Tidak Ditemukan',
-                    "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut."
+                    "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut.",
+                    'ACCOUNT_NOT_FOUND'
                 ),
                 Response::HTTP_NOT_FOUND
             );
@@ -43,17 +44,32 @@ class ForgotPasswordController extends Controller
             ]
         );
 
-        Mail::to($user->email)->send(new SendingOTPMail($user->name, $otp));
-        Log::info('| Auth | - Send OTP success for email: ' . $user->email);
+        try {
+            Mail::to($user->email)->send(new SendingOTPMail($user->name, $otp));
+            Log::info('| Auth | - Send OTP success for email: ' . $user->email);
 
-        return response()->json(
-            new WithoutDataResource(
-                Response::HTTP_OK,
-                'Berhasil Mengirim Kode OTP',
-                'Kode OTP berhasil dikirim, silahkan cek inbox atau spam di email anda.'
-            ),
-            Response::HTTP_OK
-        );
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_OK,
+                    'Berhasil Mengirim Kode OTP',
+                    'Kode OTP berhasil dikirim, silahkan cek inbox atau spam di email anda.',
+                    'OTP_SENT'
+                ),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('| Auth | - Send OTP failed for email: ' . $user->email . ' | Error: ' . $e->getMessage());
+
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'Gagal Mengirim OTP',
+                    'Terjadi kesalahan dalam mengirimkan kode OTP, silahkan coba lagi beberapa saat lagi.',
+                    'OTP_SEND_FAILED'
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
     }
 
     public function verifyOTP(VerifyOTPRequest $request)
@@ -66,7 +82,8 @@ class ForgotPasswordController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_NOT_FOUND,
                     'Akun Tidak Ditemukan',
-                    "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut."
+                    "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut.",
+                    'ACCOUNT_NOT_FOUND'
                 ),
                 Response::HTTP_NOT_FOUND
             );
@@ -79,7 +96,8 @@ class ForgotPasswordController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_BAD_REQUEST,
                     'OTP Tidak Ditemukan',
-                    'Kode OTP tidak ditemukan. Silakan kirim ulang OTP.'
+                    'Kode OTP tidak ditemukan. Silakan kirim ulang OTP.',
+                    'OTP_NOT_FOUND'
                 ),
                 Response::HTTP_BAD_REQUEST
             );
@@ -91,7 +109,8 @@ class ForgotPasswordController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
                     'OTP Tidak Valid',
-                    'Kode OTP yang anda masukkan tidak sesuai. Silakan coba lagi atau kirim ulang OTP.'
+                    'Kode OTP yang anda masukkan tidak sesuai. Silakan coba lagi atau kirim ulang OTP.',
+                    'INVALID_OTP'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -103,7 +122,8 @@ class ForgotPasswordController extends Controller
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
                     'OTP Kadaluarsa',
-                    'Kode OTP yang anda masukkan sudah kadaluarsa. Silakan kirim ulang kode OTP.'
+                    'Kode OTP yang anda masukkan sudah kadaluarsa. Silakan kirim ulang kode OTP.',
+                    'EXPIRED_OTP'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -115,7 +135,8 @@ class ForgotPasswordController extends Controller
             new WithoutDataResource(
                 Response::HTTP_OK,
                 'OTP Berhasil Diverifikasi',
-                'Kode OTP anda berhasil diverifikasi. Silahkan lakukan reset password anda.'
+                'Kode OTP anda berhasil diverifikasi. Silahkan lakukan reset password anda.',
+                'OTP_VERIFIED'
             ),
             Response::HTTP_OK
         );
