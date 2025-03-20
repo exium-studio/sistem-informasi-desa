@@ -9,20 +9,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Announcement extends Model
+class Village extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'announcements';
-
     protected $guarded = ['id'];
 
+    protected $table = 'villages';
+
     protected $casts = [
-        'created_by' => 'integer',
-        'document_id' => 'array',
-        'location' => 'array',
-        'published_at' => 'datetime:UTC',
-        'expires_at' => 'datetime:UTC',
+        'history_file' => 'integer',
+        'village_funds' => 'integer',
+        'mission' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -48,12 +46,12 @@ class Announcement extends Model
     }
 
     /**
-     * Get the user that owns the Announcement
+     * Get the document_history that owns the Village
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user(): BelongsTo
+    public function document_history(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by', 'id');
+        return $this->belongsTo(Document::class, 'history_file', 'id');
     }
 }

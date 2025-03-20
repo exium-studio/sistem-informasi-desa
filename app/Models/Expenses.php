@@ -9,20 +9,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Announcement extends Model
+class Expenses extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'announcements';
-
     protected $guarded = ['id'];
+
+    protected $table = 'expenses';
 
     protected $casts = [
         'created_by' => 'integer',
-        'document_id' => 'array',
-        'location' => 'array',
-        'published_at' => 'datetime:UTC',
-        'expires_at' => 'datetime:UTC',
+        'value' => 'integer',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -48,7 +45,7 @@ class Announcement extends Model
     }
 
     /**
-     * Get the user that owns the Announcement
+     * Get the user (kepala keluarga) that owns the FamilyCard
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

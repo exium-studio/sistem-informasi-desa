@@ -7,8 +7,10 @@ use Database\Seeders\Auth\PermissionSeeder;
 use Database\Seeders\Auth\RoleSeeder;
 use Database\Seeders\Features\AnnouncementSeeder;
 use Database\Seeders\Features\FamilyCardSeeder;
+use Database\Seeders\Features\IncomeOutcomeSeeder;
 use Database\Seeders\Features\JobTitleSeeder;
 use Database\Seeders\Features\PopulationGrowthSeeder;
+use Database\Seeders\Features\VillageSeeder;
 use Database\Seeders\Gens\BloodTypeSeeder;
 use Database\Seeders\Gens\CitizenshipSeeder;
 use Database\Seeders\Gens\DocumentTypeSeeder;
@@ -44,17 +46,19 @@ class DatabaseSeeder extends Seeder
             RelationshipStatusSeeder::class,
             ReligionSeeder::class,
             FacilitiesSeeder::class,
-            
+
             // Auth
             PermissionSeeder::class,
             RoleSeeder::class,
             AccountSeeder::class,
             OfficialContactSeeder::class,
-            
+
+            VillageSeeder::class,
             JobTitleSeeder::class,
             FamilyCardSeeder::class,
             PopulationGrowthSeeder::class,
-            AnnouncementSeeder::class
+            AnnouncementSeeder::class,
+            IncomeOutcomeSeeder::class,
         ]);
     }
 }
