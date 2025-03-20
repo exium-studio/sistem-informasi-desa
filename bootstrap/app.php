@@ -18,7 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
-            'custom.throttle' => \App\Http\Middleware\CustomThrottle::class
+            'custom.throttle' => \App\Http\Middleware\CustomThrottle::class,
+            'verified.role' => \App\Http\Middleware\VerifiedRole::class,
         ]);
 
         //

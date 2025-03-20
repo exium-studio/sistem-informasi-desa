@@ -16,11 +16,13 @@ class AnnouncementSeeder extends Seeder
     public function run(): void
     {
         $users = User::where('id', '!=', 1)->get();
+        $documentIds = [1, 2, 3, 4, 5];
 
         // Buat 5 pengumuman
         foreach (range(1, 5) as $index) {
             Announcement::create([
                 'created_by' => $users->random()->id,
+                'document_id' => $this->generateRandomDocumentIds($documentIds),
                 'title' => 'Announcement ' . $index,
                 'description' => 'This is the description for announcement ' . $index,
                 'location' => [
@@ -31,5 +33,15 @@ class AnnouncementSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]);
         }
+    }
+
+    /**
+     * Fungsi untuk menghasilkan array document_id secara acak
+     */
+    private function generateRandomDocumentIds($documentIds)
+    {
+        shuffle($documentIds);
+        $randomCount = rand(1, 3);
+        return array_slice($documentIds, 0, $randomCount);
     }
 }

@@ -21,7 +21,8 @@ class CustomThrottle
                 new WithoutDataResource(
                     Response::HTTP_TOO_MANY_REQUESTS,
                     'Terlalu Banyak Permintaan',
-                    'Anda terlalu banyak melakukan permintaan, coba lagi setelah ' . RateLimiter::availableIn($key) . ' detik.'
+                    'Anda terlalu banyak melakukan permintaan, coba lagi setelah ' . RateLimiter::availableIn($key) . ' detik.',
+                    'TOO_MANY_REQUESTS'
                 ),
                 Response::HTTP_TOO_MANY_REQUESTS
             );

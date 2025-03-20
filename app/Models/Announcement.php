@@ -19,7 +19,7 @@ class Announcement extends Model
 
     protected $casts = [
         'created_by' => 'integer',
-        'document_id' => 'integer',
+        'document_id' => 'array',
         'location' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
