@@ -16,6 +16,7 @@ use Database\Seeders\Gens\EducationSeeder;
 use Database\Seeders\Gens\FacilitiesSeeder;
 use Database\Seeders\Gens\JobTypeSeeder;
 use Database\Seeders\Gens\MariedStatusSeeder;
+use Database\Seeders\Gens\OfficialContactSeeder;
 use Database\Seeders\Gens\RelationshipStatusSeeder;
 use Database\Seeders\Gens\ReligionSeeder;
 use Database\Seeders\Static\DocumentStatusSeeder;
@@ -48,6 +49,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             AccountSeeder::class,
+            OfficialContactSeeder::class,
             
             JobTitleSeeder::class,
             FamilyCardSeeder::class,

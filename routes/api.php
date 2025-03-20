@@ -17,7 +17,15 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 	Route::get('/logout', [LoginController::class, 'logout'])->middleware('web');
 	Route::get('/user-info', [LoginController::class, 'getUserInfo']);
 
-	Route::group(['prefix' => 'sid/dashboard'], function () {
+	Route::group(['prefix' => 'web'], function () {
+		Route::group(['prefix' => 'sid/dashboard'], function () {
+			
+		});
+	});
 
+	Route::group(['prefix' => 'mobile'], function () {
+		Route::group(['prefix' => 'sid/home'], function () {
+			
+		});
 	});
 });
