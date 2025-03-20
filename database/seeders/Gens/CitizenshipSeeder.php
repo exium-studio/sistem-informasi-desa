@@ -15,8 +15,26 @@ class CitizenshipSeeder extends Seeder
     public function run(): void
     {
         $citizenships = [
-            'WNI',
-            'WNA'
+            'Indonesia',
+            'Singapura',
+            'Malaysia',
+            'Thailand',
+            'Vietnam',
+            'Myanmar',
+            'Kamboja',
+            'Laos',
+            'Brunei',
+            'Filipina',
+            'Timor Leste',
+            'Australia',
+            'United States',
+            'Canada',
+            'United Kingdom',
+            'Germany',
+            'France',
+            'Italy',
+            'Japan',
+            'South Korea',
         ];
 
         foreach ($citizenships as $citizenship) {

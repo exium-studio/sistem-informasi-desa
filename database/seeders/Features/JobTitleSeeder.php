@@ -17,33 +17,23 @@ class JobTitleSeeder extends Seeder
         $jobTitles = [
             [
                 'name' => 'Kepala Desa',
-                'description' => 'Pemimpin pemerintahan desa yang bertanggung jawab atas pengelolaan administrasi dan pembangunan desa.',
-                'facilities_filter' => json_encode([1, 2, 3]),
-                'civil_doc_type_filter' => json_encode([1, 2, 3]),
+                'description' => 'Pemimpin pemerintahan desa yang bertanggung jawab atas pengelolaan administrasi dan pembangunan desa.'
             ],
             [
                 'name' => 'Sekretaris Desa',
-                'description' => 'Membantu Kepala Desa dalam administrasi dan pelayanan masyarakat di desa.',
-                'facilities_filter' => json_encode([1, 3]),
-                'civil_doc_type_filter' => json_encode([1, 4, 5]),
+                'description' => 'Membantu Kepala Desa dalam administrasi dan pelayanan masyarakat di desa.'
             ],
             [
                 'name' => 'Kepala Dusun',
-                'description' => 'Mengurus administrasi dan keamanan di tingkat dusun dalam desa.',
-                'facilities_filter' => json_encode([4, 5]),
-                'civil_doc_type_filter' => json_encode([6, 7]),
+                'description' => 'Mengurus administrasi dan keamanan di tingkat dusun dalam desa.'
             ],
             [
                 'name' => 'Ketua RT',
-                'description' => 'Bertanggung jawab atas koordinasi kegiatan dan administrasi di tingkat Rukun Tetangga.',
-                'facilities_filter' => json_encode([6, 7]),
-                'civil_doc_type_filter' => json_encode([2, 8]),
+                'description' => 'Bertanggung jawab atas koordinasi kegiatan dan administrasi di tingkat Rukun Tetangga.'
             ],
             [
                 'name' => 'Ketua RW',
-                'description' => 'Mengkoordinasikan berbagai program masyarakat di tingkat Rukun Warga.',
-                'facilities_filter' => json_encode([1, 8]),
-                'civil_doc_type_filter' => json_encode([1, 9]),
+                'description' => 'Mengkoordinasikan berbagai program masyarakat di tingkat Rukun Warga.'
             ],
         ];
 
@@ -51,8 +41,6 @@ class JobTitleSeeder extends Seeder
             DB::table('job_titles')->insert([
                 'name' => $jobTitle['name'],
                 'description' => $jobTitle['description'],
-                'facilities_filter' => $jobTitle['facilities_filter'],
-                'civil_doc_type_filter' => $jobTitle['civil_doc_type_filter'],
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

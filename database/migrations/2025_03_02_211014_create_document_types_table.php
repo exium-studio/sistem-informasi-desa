@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('civil_doc_types', function (Blueprint $table) {
+        Schema::create('document_types', function (Blueprint $table) {
             $table->id();
             $table->string('label');
             $table->enum('category', ['dokumen_kependudukan', 'dokumen_sipil']);
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('civil_doc_types');
+        Schema::dropIfExists('document_types');
     }
 };

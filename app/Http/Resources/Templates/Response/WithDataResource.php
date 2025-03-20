@@ -8,14 +8,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class WithDataResource extends JsonResource
 {
     public $status;
+    public $case;
     public $title;
     public $description;
     public $data;
 
-    public function __construct($status, $title, $description, $data = null)
+    public function __construct($status, $case, $title, $description, $data = null)
     {
         parent::__construct($data);
         $this->status = $status;
+        $this->case = $case;
         $this->title = $title;
         $this->description = $description;
         $this->data = $data;
@@ -30,6 +32,8 @@ class WithDataResource extends JsonResource
                 'description' => $this->description,
                 'data' => $this->data
             ],
+            // Tambahan baru, jangan lupa modifikasi dicontroller
+            'case' => $this->case
         ];
     }
 }

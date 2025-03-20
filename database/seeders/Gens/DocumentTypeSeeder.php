@@ -7,11 +7,8 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class CivilDoctypeSeeder extends Seeder
+class DocumentTypeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $documents = [
@@ -96,7 +93,7 @@ class CivilDoctypeSeeder extends Seeder
         ];
 
         foreach ($documents as $document) {
-            DB::table('civil_doc_types')->insert([
+            DB::table('document_types')->insert([
                 'label' => $document['label'],
                 'category' => $document['category'],
                 'description' => $document['description'],

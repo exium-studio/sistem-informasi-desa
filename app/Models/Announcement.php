@@ -6,19 +6,21 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CivilDoctype extends Model
+class Announcement extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'announcements';
+
     protected $guarded = ['id'];
 
-    protected $table = 'civil_doc_types';
-
     protected $casts = [
-        'category' => 'string',
-        'max_upload' => 'integer',
+        'created_by' => 'integer',
+        'document_id' => 'integer',
+        'location' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -41,5 +43,25 @@ class CivilDoctype extends Model
             get: fn($value) => Carbon::parse($value)->setTimezone('UTC'),
             set: fn($value) => Carbon::parse($value)->setTimezone('UTC')
         );
+    }
+
+    /**
+     * Get the user that owns the Announcement
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    /**
+     * Get the document that owns the Announcement
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function document(): BelongsTo
+    {
+        return $this->belongsTo(Document::class, 'document_id', 'id');
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders\Features;
+namespace Database\Seeders\Gens;
 
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

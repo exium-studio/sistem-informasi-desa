@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('profile_photo')->nullable();
             $table->integer('account_status')->default(1); // 1 = inactive, 2 = active, 3 = deactive
+            $table->jsonb('facilities_filter')->nullable();     // id dari table facilities
+            $table->jsonb('document_type_filter')->nullable(); // id dari table document_types
             $table->timestampTz('register_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestampTz('deactivate_at')->nullable();
             $table->timestampTz('last_login')->nullable();

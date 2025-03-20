@@ -44,6 +44,8 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'facilities_filter' => 'array',
+            'document_type_filter' => 'array',
             'account_status' => 'integer',
             'email_verified_at' => 'datetime:UTC',
             'register_at' => 'datetime:UTC',
