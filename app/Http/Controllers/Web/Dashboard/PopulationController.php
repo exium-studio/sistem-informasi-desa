@@ -18,6 +18,18 @@ class PopulationController extends Controller
     public function index()
     {
         try {
+            if (!Gate::allows('dashboard.view')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
             $populasi = PopulationGrowth::getUsersWithActiveStatus();
             $family_card = FamilyCard::getFamiliCard();
             $village_funds = Village::getDanaDesa();
