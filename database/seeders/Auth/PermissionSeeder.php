@@ -19,6 +19,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'pengumuman.create', 'description' => 'Create Pengumuman', 'group' => 'pengumuman'],
             ['name' => 'pengumuman.edit', 'description' => 'Edit Pengumuman', 'group' => 'pengumuman'],
             ['name' => 'pengumuman.delete', 'description' => 'Delete Pengumuman', 'group' => 'pengumuman'],
+            ['name' => 'officialcontact.view', 'description' => 'View Official Contact', 'group' => 'official_contact'],
+            ['name' => 'officialcontact.create', 'description' => 'Create Official Contact', 'group' => 'official_contact'],
+            ['name' => 'officialcontact.edit', 'description' => 'Edit Official Contact', 'group' => 'official_contact'],
+            ['name' => 'officialcontact.delete', 'description' => 'Delete Official Contact', 'group' => 'official_contact'],
         ];
 
         foreach ($permissions as $permission) {

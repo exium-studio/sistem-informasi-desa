@@ -8,7 +8,6 @@ use App\Http\Resources\Templates\Response\WithoutDataResource;
 use App\Models\FamilyCard;
 use App\Models\PopulationGrowth;
 use App\Models\Village;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;

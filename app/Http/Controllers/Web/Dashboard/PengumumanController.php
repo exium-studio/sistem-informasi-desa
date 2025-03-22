@@ -180,12 +180,12 @@ class PengumumanController extends Controller
             if ($pengumuman->isEmpty()) {
                 return response()->json(
                     new WithoutDataResource(
-                        Response::HTTP_OK,
-                        'SUCCESS_GET_DATA',
+                        Response::HTTP_NOT_FOUND,
+                        'NOT_FOUND',
                         'Berhasil Mengambil Detail Data',
                         'Data pengumuman tidak ditemukan.',
                     ),
-                    Response::HTTP_OK
+                    Response::HTTP_NOT_FOUND
                 );
             }
 
@@ -229,6 +229,17 @@ class PengumumanController extends Controller
             }
 
             $announcement = Announcement::findOrFail($id);
+            if (!$announcement) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_NOT_FOUND,
+                        'NOT_FOUND',
+                        'Berhasil Mengambil Detail Data',
+                        'Data pengumuman tidak ditemukan.',
+                    ),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $data = $request->validated();
 
@@ -333,6 +344,17 @@ class PengumumanController extends Controller
             }
 
             $announcement = Announcement::findOrFail($id);
+            if (!$announcement) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_NOT_FOUND,
+                        'NOT_FOUND',
+                        'Berhasil Mengambil Detail Data',
+                        'Data pengumuman tidak ditemukan.',
+                    ),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             DB::beginTransaction();
 

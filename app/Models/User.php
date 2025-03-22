@@ -76,4 +76,16 @@ class User extends Authenticatable
             set: fn($value) => Carbon::parse($value)->setTimezone('UTC')
         );
     }
+
+    public function getFacilitiesFilterAttribute($value)
+    {
+        $ids = json_decode($value, true) ?? [];
+        return Facilities::whereIn('id', $ids)->get();
+    }
+
+    public function getDocumentTypeFilterAttribute($value)
+    {
+        $ids = json_decode($value, true) ?? [];
+        return DocumentType::whereIn('id', $ids)->get();
+    }
 }
