@@ -62,6 +62,11 @@ class StorageServerHelper
 		self::login();
 		self::initDomain();
 
+		// Normalize single file to array
+		if ($files instanceof \Illuminate\Http\UploadedFile) {
+			$files = [$files];
+		}
+
 		if (!is_array($files) || empty($files)) {
 			Log::error('Multiple upload gagal! Tidak ada file yang dikirim.');
 			throw new \Exception('Tidak ada file yang dikirim untuk diunggah.');
@@ -94,7 +99,25 @@ class StorageServerHelper
 
 		// Logging
 		Log::info('Storage Server Upload Multiple Response: ' . $responseupload->body());
+
+		// Cek apakah HTTP gagal
+		if ($responseupload->failed()) {
+			Log::error('Upload file ke storage server gagal.', [
+				'status' => $responseupload->status(),
+				'response' => $responseupload->body(),
+			]);
+			throw new \Exception('Gagal mengunggah file ke server penyimpanan.');
+		}
+
+		// Cek format JSON
 		$uploadinfo = json_decode($responseupload->body(), true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			Log::error('Gagal decode response JSON dari storage server.', [
+				'body' => $responseupload->body(),
+			]);
+			throw new \Exception('Gagal membaca respon dari server penyimpanan.');
+		}
+
 		if (!isset($uploadinfo['message']['data'])) {
 			Log::error('Upload multiple files gagal! Response:', [$uploadinfo]);
 			throw new \Exception('Gagal mengunggah file. Response tidak memiliki kunci "data".');
@@ -123,8 +146,6 @@ class StorageServerHelper
 		]);
 
 		$result = $response->json();
-
-		// Logging
 		Log::info('Response dari delete dokumen:', $result);
 
 		if ($response->failed()) {

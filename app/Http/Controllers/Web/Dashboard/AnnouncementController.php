@@ -11,18 +11,17 @@ use App\Http\Resources\Templates\Response\WithoutDataResource;
 use App\Http\Resources\Web\Dashboard\AnnouncementResource;
 use App\Models\Announcement;
 use App\Models\Document;
-use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
-class PengumumanController extends Controller
+class AnnouncementController extends Controller
 {
     public function index()
     {
         try {
-            if (!Gate::allows('pengumuman.view')) {
+            if (!Gate::allows('announcement.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -58,7 +57,7 @@ class PengumumanController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('| Dashboard Pengumuman | - Error function index : ' . $e->getMessage());
+            Log::error('| Announcement Index | - Error function index : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -74,7 +73,7 @@ class PengumumanController extends Controller
     public function store(CreateAnnouncementRequest $request)
     {
         try {
-            if (!Gate::allows('pengumuman.create')) {
+            if (!Gate::allows('announcement.create')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -92,8 +91,8 @@ class PengumumanController extends Controller
 
             $documentIds = [];
 
-            if ($request->hasFile('documents') && is_array($request->file('documents'))) {
-                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('documents'));
+            if ($request->hasFile('file') && is_array($request->file('file'))) {
+                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('file'));
 
                 // Debugging struktur response
                 // Log::info('Struktur response upload file:', $uploadedFiles);
@@ -130,8 +129,8 @@ class PengumumanController extends Controller
                 'description'  => $data['description'],
                 'document_id'  => $documentIds ?: null,
                 'location'     => $data['location'] ?? null,
-                'published_at' => $data['published_at'] ?? null,
-                'expires_at'   => $data['expires_at'] ?? null
+                'published_at' => $data['startDateTime'] ?? null,
+                'expires_at'   => $data['endDateTime'] ?? null
             ]);
 
             DB::commit();
@@ -147,12 +146,12 @@ class PengumumanController extends Controller
             );
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('| Dashboard Pengumuman | - Error function store : ' . $e->getMessage());
+            Log::error('| Announcement Store | - Error function store : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
                     'ERROR_CREATE_ANNOUNCEMENT',
-                    'Gagal Create Data',
+                    'Gagal Menyimpan Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -163,7 +162,7 @@ class PengumumanController extends Controller
     public function show($id)
     {
         try {
-            if (!Gate::allows('pengumuman.view')) {
+            if (!Gate::allows('announcement.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -199,11 +198,11 @@ class PengumumanController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('| Dashboard Pengumuman | - Error function show : ' . $e->getMessage());
+            Log::error('| Announcement Show | - Error function show : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'ERROR_DETAIL_ANNOUNCEMENT',
+                    'ERROR_GET_ANNOUNCEMENT',
                     'Gagal Mendapatkan Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
@@ -215,7 +214,7 @@ class PengumumanController extends Controller
     public function update(UpdateAnnouncementRequest $request, $id)
     {
         try {
-            if (!Gate::allows('pengumuman.edit')) {
+            if (!Gate::allows('announcement.edit')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -246,8 +245,8 @@ class PengumumanController extends Controller
 
             $documentIds = [];
 
-            if ($request->hasFile('documents') && is_array($request->file('documents'))) {
-                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('documents'));
+            if ($request->hasFile('file') && is_array($request->file('file'))) {
+                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('file'));
 
                 // Debugging struktur response
                 // Log::info('Struktur response upload file:', $uploadedFiles);
@@ -295,9 +294,9 @@ class PengumumanController extends Controller
                 'title'        => $data['title'],
                 'description'  => $data['description'],
                 'location'     => $data['location'] ?? null,
-                'published_at' => $data['published_at'] ?? null,
-                'expires_at'   => $data['expires_at'] ?? null,
-                'document_id'  => $documentIds ?: null,
+                'published_at' => $data['startDateTime'] ?? null,
+                'expires_at'   => $data['endDateTime'] ?? null,
+                'document_id'  => $documentIds ?: $announcement->document_id,
             ]);
 
             DB::commit();
@@ -313,12 +312,12 @@ class PengumumanController extends Controller
             );
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('| Dashboard Pengumuman | - Error function update : ' . $e->getMessage());
+            Log::error('| Announcement Update | - Error function update : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'ERROR_DETAIL_ANNOUNCEMENT',
-                    'Gagal Mendapatkan Data',
+                    'ERROR_UPDATE_ANNOUNCEMENT',
+                    'Gagal Memperbarui Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -329,7 +328,7 @@ class PengumumanController extends Controller
     public function destroy($id)
     {
         try {
-            if (!Gate::allows('pengumuman.delete')) {
+            if (!Gate::allows('announcement.delete')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -388,7 +387,7 @@ class PengumumanController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('| Dashboard Pengumuman | - Error function destroy : ' . $e->getMessage());
+            Log::error('| Announcement Delete | - Error function destroy : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,

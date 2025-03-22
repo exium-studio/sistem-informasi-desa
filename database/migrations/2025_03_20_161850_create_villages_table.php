@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('vision');
             $table->jsonb('mission');
             $table->integer('village_funds'); // Dana desa
-            $table->softDeletesTz();
             $table->timestampsTz();
         });
     }

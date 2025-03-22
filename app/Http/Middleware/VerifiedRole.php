@@ -10,55 +10,38 @@ use Symfony\Component\HttpFoundation\Response;
 
 class VerifiedRole
 {
-    public function handle(Request $request, Closure $next, $guard = null)
+    public function handle(Request $request, Closure $next, $type = null)
     {
         $user = Auth::user();
 
-        // Pastikan sudah login
         if (!$user) {
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
-                    'Logout Gagal',
-                    'Anda tidak memiliki sesi login yang aktif.',
-                    'NO_ACTIVE_SESSION'
+                    'NO_ACTIVE_SESSION',
+                    'Akses Ditolak',
+                    'Anda tidak memiliki sesi login yang aktif.'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
         }
 
-        // Cek apakah request berasal dari web atau mobile
-        $isWeb = $request->is('web/*');
-        $isMobile = $request->is('mobile/*');
+        $roles = match ($type) {
+            'web' => ['Super Admin', 'Lurah', 'Kepala RW', 'Kepala RT'],
+            'mobile' => ['Super Admin', 'Warga Sipil'],
+            default => [],
+        };
 
-        // Web roles
-        $webRoles = ['Super Admin', 'Lurah', 'Kepala RW', 'Kepala RT'];
-
-        // Mobile roles
-        $mobileRoles = ['Super Admin', 'Warga Sipil'];
-
-        // Mengecek akses berdasarkan role dan jenis request
-        if ($isWeb && !$user->hasRole($webRoles)) {
+        if (!empty($roles) && !$user->hasRole($roles)) {
+            $request->user()->currentAccessToken()->delete();
             return response()->json(
                 new WithoutDataResource(
-                    Response::HTTP_UNAUTHORIZED,
-                    'Logout Gagal',
-                    'Anda tidak memiliki sesi login yang aktif.',
-                    'NO_ACTIVE_SESSION'
+                    Response::HTTP_FORBIDDEN,
+                    'FORBIDDEN_ROLE',
+                    'Akses Ditolak',
+                    "Anda saat ini sedang memasuki sesi yang tidak diizinkan, sesi login anda telah dihapus."
                 ),
-                Response::HTTP_UNAUTHORIZED
-            );
-        }
-
-        if ($isMobile && !$user->hasRole($mobileRoles)) {
-            return response()->json(
-                new WithoutDataResource(
-                    Response::HTTP_UNAUTHORIZED,
-                    'Logout Gagal',
-                    'Anda tidak memiliki sesi login yang aktif.',
-                    'NO_ACTIVE_SESSION'
-                ),
-                Response::HTTP_UNAUTHORIZED
+                Response::HTTP_FORBIDDEN
             );
         }
 

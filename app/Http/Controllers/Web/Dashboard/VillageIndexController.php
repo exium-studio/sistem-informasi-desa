@@ -5,19 +5,18 @@ namespace App\Http\Controllers\Web\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
-use App\Models\FamilyCard;
-use App\Models\PopulationGrowth;
+use App\Http\Resources\Web\Dashboard\VillageResource;
 use App\Models\Village;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
-class PopulasiController extends Controller
+class VillageIndexController extends Controller
 {
-    public function populasi()
+    public function index()
     {
         try {
-            if (!Gate::allows('dashboard.view')) {
+            if (!Gate::allows('village.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -29,27 +28,38 @@ class PopulasiController extends Controller
                 );
             }
 
-            $populasi = PopulationGrowth::getUsersWithActiveStatus();
-            $populasi_tahun_lalu = PopulationGrowth::getUsersRegisteredBeforeThisYear();
-            $family_card = FamilyCard::getFamiliCard();
-            $village_funds = Village::getDanaDesa();
+            $village = Village::with([
+                'document_history.uploaded_user',
+                'document_history.document_status',
+                'document_history.verified_user',
+                'document_image.uploaded_user',
+                'document_image.document_status',
+                'document_image.verified_user',
+            ])->first();
+            if (!$village) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_NOT_FOUND,
+                        'DATA_NOT_FOUND',
+                        'Data Tidak Ditemukan',
+                        'Data profil desa belum tersedia.',
+                    ),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             return response()->json(
                 new WithDataResource(
                     Response::HTTP_OK,
                     'SUCCESS_GET_DATA',
                     'Berhasil Mengambil Data',
-                    'Data populasi berhasil didapatkan.',
-                    [
-                        'populasi_sekarang' => $populasi->count(),
-                        'populasi_tahun_lalu' => $populasi_tahun_lalu->count(),
-                        'kk_total' => $family_card->count(),
-                        'dana_desa' => $village_funds
-                    ],
-                )
+                    'Data profil desa berhasil didapatkan.',
+                    new VillageResource($village),
+                ),
+                Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('| Dashboard Populasi | - Error : ' . $e->getMessage());
+            Log::error('| Village Index | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,

@@ -110,8 +110,8 @@ class OfficialContactController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'ERROR_GET_DATA',
-                    'Gagal Mengambil Data',
+                    'ERROR_CREATE_DATA',
+                    'Gagal Menyimpan Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -221,8 +221,8 @@ class OfficialContactController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'ERROR_GET_DATA',
-                    'Gagal Mengambil Data',
+                    'ERROR_UPDATE_DATA',
+                    'Gagal Memperbarui Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR
@@ -278,8 +278,8 @@ class OfficialContactController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
-                    'ERROR_GET_DATA',
-                    'Gagal Mengambil Data',
+                    'ERROR_DELETE_DATA',
+                    'Gagal Menghapus Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR

@@ -15,14 +15,16 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             ['name' => 'dashboard.view', 'description' => 'View Dashboard', 'group' => 'dashboard'],
-            ['name' => 'pengumuman.view', 'description' => 'View Pengumuman', 'group' => 'pengumuman'],
-            ['name' => 'pengumuman.create', 'description' => 'Create Pengumuman', 'group' => 'pengumuman'],
-            ['name' => 'pengumuman.edit', 'description' => 'Edit Pengumuman', 'group' => 'pengumuman'],
-            ['name' => 'pengumuman.delete', 'description' => 'Delete Pengumuman', 'group' => 'pengumuman'],
+            ['name' => 'announcement.view', 'description' => 'View Announcement', 'group' => 'announcement'],
+            ['name' => 'announcement.create', 'description' => 'Create Announcement', 'group' => 'announcement'],
+            ['name' => 'announcement.edit', 'description' => 'Edit Announcement', 'group' => 'announcement'],
+            ['name' => 'announcement.delete', 'description' => 'Delete Announcement', 'group' => 'announcement'],
             ['name' => 'officialcontact.view', 'description' => 'View Official Contact', 'group' => 'official_contact'],
             ['name' => 'officialcontact.create', 'description' => 'Create Official Contact', 'group' => 'official_contact'],
             ['name' => 'officialcontact.edit', 'description' => 'Edit Official Contact', 'group' => 'official_contact'],
             ['name' => 'officialcontact.delete', 'description' => 'Delete Official Contact', 'group' => 'official_contact'],
+            ['name' => 'village.view', 'description' => 'View Village', 'group' => 'village'],
+            ['name' => 'village.edit', 'description' => 'Edit Village', 'group' => 'village'],
         ];
 
         foreach ($permissions as $permission) {

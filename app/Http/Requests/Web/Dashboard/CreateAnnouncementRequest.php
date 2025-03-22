@@ -26,31 +26,33 @@ class CreateAnnouncementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'documents' => ['nullable', 'array'], // Array file, tidak wajib diisi
-            'documents.*' => ['nullable', 'file', 'mimes:pdf', 'max:10240'], // Validasi setiap dokumen
+            'file' => ['nullable', 'array'],
+            'file.*' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'location' => ['nullable', 'array'],
-            'published_at' => ['nullable', 'date'],
-            'expires_at' => ['nullable', 'date'],
+            'startDateTime' => ['required', 'date'],
+            'endDateTime' => ['required', 'date'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'documents.array' => 'Dokumen harus berupa array.',
-            'documents.*.file' => 'Setiap dokumen harus berupa file yang valid.',
-            'documents.*.mimes' => 'Setiap dokumen harus berupa file PDF.',
-            'documents.*.max' => 'Setiap dokumen tidak boleh lebih dari 10 MB.',
+            'file.array' => 'Dokumen harus berupa array.',
+            'file.*.file' => 'Setiap dokumen harus berupa file yang valid.',
+            'file.*.mimes' => 'Setiap dokumen harus berupa file PDF.',
+            'file.*.max' => 'Setiap dokumen tidak boleh lebih dari 10 MB.',
             'title.required' => 'Judul tidak boleh kosong.',
             'title.string' => 'Judul harus berupa string.',
             'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
             'description.required' => 'Deskripsi tidak boleh kosong.',
             'description.string' => 'Deskripsi harus berupa string.',
             'location.array' => 'Lokasi harus berupa array.',
-            'published_at.date' => 'Tanggal publikasi harus berupa tanggal.',
-            'expires_at.date' => 'Tanggal kadaluarsa harus berupa tanggal.',
+            'startDateTime.required' => 'Tanggal publikasi tidak boleh kosong.',
+            'startDateTime.date' => 'Tanggal publikasi harus berupa tanggal.',
+            'endDateTime.required' => 'Tanggal kadaluarsa tidak boleh kosong.',
+            'endDateTime.date' => 'Tanggal kadaluarsa harus berupa tanggal.',
         ];
     }
 

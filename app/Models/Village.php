@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Village extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $guarded = ['id'];
 
@@ -22,8 +21,7 @@ class Village extends Model
         'village_funds' => 'integer',
         'mission' => 'array',
         'created_at' => 'datetime:UTC',
-        'updated_at' => 'datetime:UTC',
-        'delete_at' => 'datetime:UTC',
+        'updated_at' => 'datetime:UTC'
     ];
 
     /**
@@ -58,5 +56,15 @@ class Village extends Model
     public function document_history(): BelongsTo
     {
         return $this->belongsTo(Document::class, 'history_file', 'id');
+    }
+
+    /**
+     * Get the document_image that owns the Village
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function document_image(): BelongsTo
+    {
+        return $this->belongsTo(Document::class, 'image_file', 'id');
     }
 }
