@@ -47,6 +47,11 @@ class Announcement extends Model
         );
     }
 
+    public function getDocumentsAttribute()
+    {
+        return Document::with(['document_status', 'uploaded_user', 'verified_user'])->whereIn('id', $this->document_id ?? [])->get();
+    }
+
     /**
      * Get the user that owns the Announcement
      *

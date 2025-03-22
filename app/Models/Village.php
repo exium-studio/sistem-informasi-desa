@@ -45,6 +45,11 @@ class Village extends Model
         );
     }
 
+    public static function getDanaDesa()
+    {
+        return self::first()->village_funds ?? 0;
+    }
+
     /**
      * Get the document_history that owns the Village
      *

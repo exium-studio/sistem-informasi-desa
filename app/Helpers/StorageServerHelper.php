@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -27,21 +28,21 @@ class StorageServerHelper
 	{
 		self::initDomain(); // Ensure domain is initialized
 		$response = Http::asForm()->post(self::$storageDomain . '/api/docs/login', [
-			'username' => self::$storageUsername,
+			'email' => self::$storageUsername,
 			'password' => self::$storagePassword
 		]);
 
 		$logininfo = $response->json();
 		Log::info($logininfo);
 
-		if ($response->failed() || !isset($logininfo['data']['token'])) {
+		if ($response->failed() || !isset($logininfo['message']['data']['token'])) {
 			Log::error('Failed to login to storage server', [
 				'status_code' => $response->status(),
 				'error_message' => $response->body()
 			]);
 		}
 
-		self::$token = $logininfo['data']['token'];
+		self::$token = $logininfo['message']['data']['token'];
 	}
 
 	public static function logout()
@@ -56,70 +57,87 @@ class StorageServerHelper
 		}
 	}
 
-	// Single upload
-	public static function uploadToServer(Request $request, $filename = 'File Upload')
-	{
-		self::login();
-		self::initDomain(); // Ensure domain is initialized
-		$file = $request->file('dokumen');
-
-		$responseupload = Http::withHeaders([
-			'Authorization' => 'Bearer ' . self::$token,
-		])->asMultipart()->post(self::$storageDomain . '/api/docs/upload-file', [
-			'filename' => $filename,
-			'file' => fopen($file->getRealPath(), 'r'),
-		]);
-
-		$uploadinfo = $responseupload->json();
-		$dataupload = $uploadinfo['data'];
-
-		self::logout();
-
-		return $dataupload;
-	}
-
-	// Multi upload
-	public static function multipleUploadToServer($file, $filename = 'File Upload')
+	public static function uploadToServer($files)
 	{
 		self::login();
 		self::initDomain();
 
+		if (!is_array($files) || empty($files)) {
+			Log::error('Multiple upload gagal! Tidak ada file yang dikirim.');
+			throw new \Exception('Tidak ada file yang dikirim untuk diunggah.');
+		}
+
+		$multipartData = [];
+
+		foreach ($files as $file) {
+			if (!$file->isValid()) {
+				Log::error('File tidak valid: ' . $file->getClientOriginalName());
+				continue;
+			}
+
+			$filename = Str::random(35) . '.' . $file->getClientOriginalExtension();
+			$multipartData[] = [
+				'name' => 'files[]', // Nama array harus sama dengan sid-dokumen
+				'contents' => fopen($file->getRealPath(), 'r'),
+				'filename' => $filename,
+			];
+		}
+
+		if (empty($multipartData)) {
+			Log::error('Tidak ada file yang valid untuk diunggah.');
+			throw new \Exception('Tidak ada file yang valid untuk diunggah.');
+		}
+
 		$responseupload = Http::withHeaders([
 			'Authorization' => 'Bearer ' . self::$token,
-		])->asMultipart()->post(self::$storageDomain . '/api/docs/upload-file', [
-			'filename' => $filename,
-			'file' => fopen($file->getRealPath(), 'r'),
-		]);
+		])->asMultipart()->post(self::$storageDomain . '/api/docs/upload-file-multiple', $multipartData);
 
-		$uploadinfo = $responseupload->json();
-		$dataupload = $uploadinfo['data'];
+		// Logging
+		Log::info('Storage Server Upload Multiple Response: ' . $responseupload->body());
+		$uploadinfo = json_decode($responseupload->body(), true);
+		if (!isset($uploadinfo['message']['data'])) {
+			Log::error('Upload multiple files gagal! Response:', [$uploadinfo]);
+			throw new \Exception('Gagal mengunggah file. Response tidak memiliki kunci "data".');
+		}
 
 		self::logout();
 
-		return $dataupload;
+		return $uploadinfo['message']['data'];
 	}
 
 	// Delete Berkas
-	public static function deleteFromServer($file_id)
+	public static function deleteFromServer(array $fileIds)
 	{
 		self::login();
 		self::initDomain();
 
-		$responseupload = Http::withHeaders([
+		if (empty($fileIds)) {
+			Log::warning('Tidak ada file ID yang diberikan untuk dihapus.');
+			throw new \Exception('Tidak ada file yang dikirim untuk dihapus.');
+		}
+
+		$response = Http::withHeaders([
 			'Authorization' => 'Bearer ' . self::$token,
-		])->asMultipart()->post(self::$storageDomain . '/api/docs/delete-file', [
-			'file_id' => $file_id,
+		])->post(self::$storageDomain . '/api/docs/delete-file-multiple', [
+			'file_id' => $fileIds,
 		]);
 
-		$uploadinfo = $responseupload->json();
-		// if (!isset($uploadinfo['data'])) {
-		// 	throw new \Exception('Error: ' . $responseupload->body());
-		// }
-		$dataupload = $uploadinfo['data'];
+		$result = $response->json();
+
+		// Logging
+		Log::info('Response dari delete dokumen:', $result);
+
+		if ($response->failed()) {
+			Log::error('Gagal menghapus dokumen dari storage server.', [
+				'status' => $response->status(),
+				'response' => $response->body(),
+			]);
+			throw new \Exception('Gagal menghapus file dari storage server.');
+		}
 
 		self::logout();
 
-		return $dataupload;
+		return $result['message']['data'];
 	}
 
 	public static function getExtensionFromMimeType($mimeType)

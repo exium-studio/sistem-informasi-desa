@@ -6,6 +6,7 @@ use Database\Seeders\Auth\AccountSeeder;
 use Database\Seeders\Auth\PermissionSeeder;
 use Database\Seeders\Auth\RoleSeeder;
 use Database\Seeders\Features\AnnouncementSeeder;
+use Database\Seeders\Features\DocumentSeeder;
 use Database\Seeders\Features\FamilyCardSeeder;
 use Database\Seeders\Features\IncomeOutcomeSeeder;
 use Database\Seeders\Features\JobTitleSeeder;
@@ -53,6 +54,7 @@ class DatabaseSeeder extends Seeder
             AccountSeeder::class,
             OfficialContactSeeder::class,
 
+            DocumentSeeder::class,
             VillageSeeder::class,
             JobTitleSeeder::class,
             FamilyCardSeeder::class,

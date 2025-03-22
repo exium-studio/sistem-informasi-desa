@@ -14,9 +14,10 @@ class VillageSeeder extends Seeder
     public function run(): void
     {
         Village::create([
-            // 'history_file' => rand(1, 5),
+            'history_file' => rand(1, 5),
+            'image_file' => rand(1, 5),
             'name' => 'Desa Makmur Jaya',
-            'brief_history' => 'Desa ini didirikan pada tahun 1890 oleh para pendatang dari wilayah sekitarnya.',
+            'summary' => 'Desa ini didirikan pada tahun 1890 oleh para pendatang dari wilayah sekitarnya.',
             'vision' => 'Menjadi desa mandiri dan sejahtera.',
             'mission' => [
                 'Meningkatkan kesejahteraan masyarakat.',

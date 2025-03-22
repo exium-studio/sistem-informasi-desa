@@ -25,13 +25,11 @@ class WithoutDataResource extends JsonResource
     {
         return array_filter([
             'status' => $this->status,
+            'case' => $this->case,
             'message' => [
                 'title' => $this->title,
                 'description' => $this->description,
             ],
-            'case' => $this->case, // Hanya tampil jika tidak null
-        ], function ($value) {
-            return $value !== null;
-        });
+        ]);
     }
 }

@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Web\Dashboard\PengumumanController;
+use App\Http\Controllers\Web\Dashboard\PopulasiController;
 use Illuminate\Support\Facades\Route;
 
 // Login Section
@@ -19,7 +21,8 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 
 	Route::group(['prefix' => 'web', 'middleware' => ['verified.role']], function () {
 		Route::group(['prefix' => 'sid/dashboard'], function () {
-			
+			Route::get('/population', [PopulasiController::class, 'populasi']);
+			Route::apiResource('/announcement', PengumumanController::class);
 		});
 	});
 

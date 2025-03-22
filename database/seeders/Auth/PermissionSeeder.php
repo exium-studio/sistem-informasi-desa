@@ -15,6 +15,10 @@ class PermissionSeeder extends Seeder
     {
         $permissions = [
             ['name' => 'dashboard.view', 'description' => 'View Dashboard', 'group' => 'dashboard'],
+            ['name' => 'pengumuman.view', 'description' => 'View Pengumuman', 'group' => 'pengumuman'],
+            ['name' => 'pengumuman.create', 'description' => 'Create Pengumuman', 'group' => 'pengumuman'],
+            ['name' => 'pengumuman.edit', 'description' => 'Edit Pengumuman', 'group' => 'pengumuman'],
+            ['name' => 'pengumuman.delete', 'description' => 'Delete Pengumuman', 'group' => 'pengumuman'],
         ];
 
         foreach ($permissions as $permission) {

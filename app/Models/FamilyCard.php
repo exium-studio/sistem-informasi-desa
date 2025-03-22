@@ -47,6 +47,13 @@ class FamilyCard extends Model
         );
     }
 
+    public static function getFamiliCard()
+    {
+        return self::whereHas('user', function ($query) {
+            $query->where('account_status', 2);
+        })->get();
+    }
+
     /**
      * Get the user (kepala keluarga) that owns the FamilyCard
      *

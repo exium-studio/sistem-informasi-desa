@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('file_path');
             $table->string('file_mime_type')->nullable();
             $table->string('file_size')->nullable();
-            $table->string('reason')->nullable();
+            $table->string('reason')->nullable(); // null ketika tidak ditolak
             // $table->softDeletesTz();
             $table->timestampsTz();
         });

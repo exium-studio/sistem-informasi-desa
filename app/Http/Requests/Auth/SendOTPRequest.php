@@ -42,7 +42,12 @@ class SendOTPRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $messages = implode(' ', $validator->errors()->all());
-        $response = new WithoutDataResource(Response::HTTP_BAD_REQUEST, 'Pengiriman OTP Gagal', $messages);
+        $response = new WithoutDataResource(
+            Response::HTTP_BAD_REQUEST,
+            'FAILED_VALIDATION',
+            'Pengiriman OTP Gagal',
+            $messages
+        );
 
         throw new HttpResponseException(response()->json($response, Response::HTTP_BAD_REQUEST));
     }

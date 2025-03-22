@@ -3,6 +3,7 @@
 namespace Database\Seeders\Features;
 
 use App\Models\Announcement;
+use App\Models\Document;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -16,7 +17,7 @@ class AnnouncementSeeder extends Seeder
     public function run(): void
     {
         $users = User::where('id', '!=', 1)->get();
-        $documentIds = [1, 2, 3, 4, 5];
+        $documentIds = Document::pluck('id')->toArray();
 
         // Buat 5 pengumuman
         foreach (range(1, 5) as $index) {

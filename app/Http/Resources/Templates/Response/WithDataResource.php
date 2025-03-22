@@ -27,14 +27,12 @@ class WithDataResource extends JsonResource
     {
         return array_filter([
             'status' => $this->status,
+            'case' => $this->case,
             'message' => [
                 'title' => $this->title,
                 'description' => $this->description,
                 'data' => $this->data
-            ],
-            'case' => $this->case, // Hanya tampil jika tidak null
-        ], function ($value) {
-            return $value !== null;
-        });
+            ]
+        ]);
     }
 }

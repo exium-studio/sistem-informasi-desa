@@ -21,9 +21,9 @@ class ResetPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_NOT_FOUND,
+                    'ACCOUNT_NOT_FOUND',
                     'Akun Tidak Ditemukan',
                     "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut.",
-                    'ACCOUNT_NOT_FOUND'
                 ),
                 Response::HTTP_NOT_FOUND
             );
@@ -34,9 +34,9 @@ class ResetPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_BAD_REQUEST,
+                    'OTP_NOT_FOUND',
                     'OTP Tidak Ditemukan',
                     'Kode OTP tidak ditemukan. Silakan kirim ulang OTP.',
-                    'OTP_NOT_FOUND'
                 ),
                 Response::HTTP_BAD_REQUEST
             );
@@ -46,9 +46,9 @@ class ResetPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_UNAUTHORIZED,
+                    'INVALID_OTP',
                     'OTP Tidak Valid',
                     'Kode OTP yang anda masukkan salah. Silakan coba lagi atau kirim ulang OTP.',
-                    'INVALID_OTP'
                 ),
                 Response::HTTP_UNAUTHORIZED
             );
@@ -65,9 +65,9 @@ class ResetPasswordController extends Controller
         return response()->json(
             new WithoutDataResource(
                 Response::HTTP_OK,
+                'PASSWORD_RESET_SUCCESS',
                 'Password Berhasil Diubah',
                 'Password anda berhasil diubah. Silahkan login menggunakan password baru anda.',
-                'PASSWORD_RESET_SUCCESS'
             ),
             Response::HTTP_OK
         );

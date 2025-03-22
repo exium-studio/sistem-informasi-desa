@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('villages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('history_file')->nullable()->constrained('documents')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('image_file')->nullable()->constrained('documents')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name');
-            $table->text('brief_history')->nullable();
+            $table->text('summary')->nullable();
             $table->string('vision');
             $table->jsonb('mission');
             $table->integer('village_funds'); // Dana desa

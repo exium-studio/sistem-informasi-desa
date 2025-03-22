@@ -43,7 +43,12 @@ class LoginDashboardRequest extends FormRequest
     public function failedValidation(Validator $validator)
     {
         $messages = implode(' ', $validator->errors()->all());
-        $response = new WithoutDataResource(Response::HTTP_BAD_REQUEST, 'Login Gagal', $messages);
+        $response = new WithoutDataResource(
+            Response::HTTP_BAD_REQUEST,
+            'FAILED_VALIDATION',
+            'Login Gagal',
+            $messages
+        );
 
         throw new HttpResponseException(response()->json($response, Response::HTTP_BAD_REQUEST));
     }
