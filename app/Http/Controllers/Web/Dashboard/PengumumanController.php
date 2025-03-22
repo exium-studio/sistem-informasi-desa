@@ -103,10 +103,9 @@ class PengumumanController extends Controller
                     foreach ($uploadedFiles as $uploadedFile) {
                         if (is_array($uploadedFile) && isset($uploadedFile['file_id'])) {
                             $document = Document::create([
-                                'user_id' => auth()->user()->id,
-                                'document_status_id' => 2,
-                                'verified_by' => null,
                                 'uploaded_by' => auth()->user()->id,
+                                'document_status_id' => 2,
+                                'verified_by' => auth()->user()->id,
                                 'file_id' => $uploadedFile['file_id'],
                                 'file_name' => $uploadedFile['filename'],
                                 'file_path' => $uploadedFile['url'],
@@ -176,8 +175,8 @@ class PengumumanController extends Controller
                 );
             }
 
-            $pengumuman = Announcement::with('user')->where('id', $id)->get();
-            if ($pengumuman->isEmpty()) {
+            $pengumuman = Announcement::with('user')->find($id);
+            if (!$pengumuman) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_NOT_FOUND,
@@ -195,7 +194,7 @@ class PengumumanController extends Controller
                     'SUCCESS_GET_DATA',
                     'Berhasil Mengambil Detail Data',
                     'Data pengumuman berhasil didapatkan.',
-                    AnnouncementResource::collection($pengumuman),
+                    new AnnouncementResource($pengumuman),
                 ),
                 Response::HTTP_OK
             );
@@ -258,10 +257,9 @@ class PengumumanController extends Controller
                     foreach ($uploadedFiles as $uploadedFile) {
                         if (is_array($uploadedFile) && isset($uploadedFile['file_id'])) {
                             $document = Document::create([
-                                'user_id' => auth()->user()->id,
-                                'document_status_id' => 2,
-                                'verified_by' => null,
                                 'uploaded_by' => auth()->user()->id,
+                                'document_status_id' => 2,
+                                'verified_by' => auth()->user()->id,
                                 'file_id' => $uploadedFile['file_id'],
                                 'file_name' => $uploadedFile['filename'],
                                 'file_path' => $uploadedFile['url'],

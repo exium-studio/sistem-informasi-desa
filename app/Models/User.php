@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasArrayRelations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, HasRoles, SoftDeletes;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles, SoftDeletes, HasArrayRelations;
 
     /**
      * The attributes that are mass assignable.
@@ -79,13 +80,11 @@ class User extends Authenticatable
 
     public function getFacilitiesFilterAttribute($value)
     {
-        $ids = json_decode($value, true) ?? [];
-        return Facilities::whereIn('id', $ids)->get();
+        return $this->resolveArrayRelation($value, Facilities::class);
     }
 
     public function getDocumentTypeFilterAttribute($value)
     {
-        $ids = json_decode($value, true) ?? [];
-        return DocumentType::whereIn('id', $ids)->get();
+        return $this->resolveArrayRelation($value, DocumentType::class);
     }
 }

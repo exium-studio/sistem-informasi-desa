@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasArrayRelations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,11 +12,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Announcement extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasArrayRelations;
 
     protected $table = 'announcements';
 
     protected $guarded = ['id'];
+
+    protected $appends = ['documents'];
 
     protected $casts = [
         'created_by' => 'integer',
@@ -49,7 +52,11 @@ class Announcement extends Model
 
     public function getDocumentsAttribute()
     {
-        return Document::with(['document_status', 'uploaded_user', 'verified_user'])->whereIn('id', $this->document_id ?? [])->get();
+        return $this->resolveArrayRelation(
+            $this->document_id,
+            Document::class,
+            ['document_status', 'uploaded_user', 'verified_user']
+        );
     }
 
     /**

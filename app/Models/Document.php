@@ -17,9 +17,11 @@ class Document extends Model
     protected $table = 'documents';
 
     protected $casts = [
+        'uploaded_by' => 'integer',
+        'document_status_id' => 'integer',
+        'verified_by' => 'integer',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
-        // 'delete_at' => 'datetime:UTC',
     ];
 
     /**
@@ -39,16 +41,6 @@ class Document extends Model
             get: fn($value) => Carbon::parse($value)->setTimezone('UTC'),
             set: fn($value) => Carbon::parse($value)->setTimezone('UTC')
         );
-    }
-
-    /**
-     * Get the user that owns the Document
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**

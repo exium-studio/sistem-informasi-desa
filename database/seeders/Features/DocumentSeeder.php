@@ -23,7 +23,6 @@ class DocumentSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             $statusId = $statuses[array_rand($statuses)];
             Document::create([
-                'user_id' => $users[array_rand($users)],
                 'document_status_id' => $statusId,
                 'verified_by' => rand(0, 1) ? $users[array_rand($users)] : null,
                 'uploaded_by' => rand(0, 1) ? $users[array_rand($users)] : null,
