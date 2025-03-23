@@ -25,6 +25,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'officialcontact.delete', 'description' => 'Delete Official Contact', 'group' => 'official_contact'],
             ['name' => 'village.view', 'description' => 'View Village', 'group' => 'village'],
             ['name' => 'village.edit', 'description' => 'Edit Village', 'group' => 'village'],
+            ['name' => 'fundmutation.view', 'description' => 'View Fund Mutation', 'group' => 'fund_mutation'],
         ];
 
         foreach ($permissions as $permission) {

@@ -45,11 +45,11 @@ class Expenses extends Model
     }
 
     /**
-     * Get the user (kepala keluarga) that owns the FamilyCard
+     * Get the created_user
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function user(): BelongsTo
+    public function created_user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }

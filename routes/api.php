@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Web\Dashboard\AnnouncementController;
+use App\Http\Controllers\Web\Dashboard\FundMutationController;
 use App\Http\Controllers\Web\Dashboard\OfficialContactController;
 use App\Http\Controllers\Web\Dashboard\PopulationController;
 use App\Http\Controllers\Web\Dashboard\VillageIndexController;
@@ -27,6 +28,7 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 			Route::apiResource('/announcement', AnnouncementController::class);
 			Route::apiResource('/official-contact', OfficialContactController::class);
 			Route::get('/village', [VillageIndexController::class, 'index']);
+			Route::post('/fund-mutation', [FundMutationController::class, 'index']);
 		});
 	});
 

@@ -50,7 +50,7 @@ class PopulationGrowth extends Model
      */
     public static function getUsersWithActiveStatus()
     {
-        return User::where('account_status', 2)->get();
+        return User::where('id', '!=', 1)->where('account_status', 2)->get();
     }
 
     /**

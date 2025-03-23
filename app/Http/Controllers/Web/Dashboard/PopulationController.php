@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web\Dashboard;
 
+use App\Helpers\CalculationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
@@ -30,8 +31,19 @@ class PopulationController extends Controller
                 );
             }
 
-            $populasi = PopulationGrowth::getUsersWithActiveStatus();
-            $family_card = FamilyCard::getFamiliCard();
+            $currentYear = now()->year;
+            $lastYear = $currentYear - 1;
+
+            $populasi_sekarang = PopulationGrowth::getUsersWithActiveStatus();
+            $total_population_now = $populasi_sekarang->count();
+
+            $population_last_year = PopulationGrowth::where('year', $lastYear)->first()?->citizen_total ?? 0;
+            $population_growth = CalculationHelper::calculateGrowthPercentage($total_population_now, $population_last_year);
+
+            $family_now = FamilyCard::whereYear('created_at', $currentYear)->count();
+            $family_last_year = FamilyCard::whereYear('created_at', $lastYear)->count();
+            $family_growth = CalculationHelper::calculateGrowthPercentage($family_now, $family_last_year);
+
             $village_funds = Village::getDanaDesa();
 
             return response()->json(
@@ -41,9 +53,11 @@ class PopulationController extends Controller
                     'Berhasil Mengambil Data',
                     'Data populasi berhasil didapatkan.',
                     [
-                        'populasi_sekarang' => $populasi->count(),
-                        'kk_total' => $family_card->count(),
-                        'dana_desa' => $village_funds
+                        'total_population' => $total_population_now,
+                        'population_growth' => $population_growth,
+                        'total_family' => $family_now,
+                        'family_growth' => $family_growth,
+                        'total_village_funds' => $village_funds
                     ],
                 )
             );

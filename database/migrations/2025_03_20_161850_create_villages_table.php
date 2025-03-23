@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('summary')->nullable();
             $table->string('vision');
             $table->jsonb('mission');
-            $table->integer('village_funds'); // Dana desa
+            $table->integer('village_funds')->default(0); // Dana desa
+            $table->integer('village_area')->default(0); // Luas desa dalam meter persegi
             $table->timestampsTz();
         });
     }

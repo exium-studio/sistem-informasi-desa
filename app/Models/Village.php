@@ -19,6 +19,7 @@ class Village extends Model
     protected $casts = [
         'history_file' => 'integer',
         'village_funds' => 'integer',
+        'village_area' => 'integer',
         'mission' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC'
