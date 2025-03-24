@@ -25,6 +25,7 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 	Route::group(['prefix' => 'web', 'middleware' => ['verified.role:web']], function () {
 		Route::group(['prefix' => 'sid/dashboard'], function () {
 			Route::get('/population', [PopulationController::class, 'index']);
+			Route::post('/population-growth', [PopulationController::class, 'growthByReligion']);
 			Route::apiResource('/announcement', AnnouncementController::class);
 			Route::apiResource('/official-contact', OfficialContactController::class);
 			Route::get('/village', [VillageIndexController::class, 'index']);

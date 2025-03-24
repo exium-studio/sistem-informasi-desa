@@ -14,7 +14,7 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            ['name' => 'dashboard.view', 'description' => 'View Dashboard', 'group' => 'dashboard'],
+            ['name' => 'population.view', 'description' => 'View Population', 'group' => 'population'],
             ['name' => 'announcement.view', 'description' => 'View Announcement', 'group' => 'announcement'],
             ['name' => 'announcement.create', 'description' => 'Create Announcement', 'group' => 'announcement'],
             ['name' => 'announcement.edit', 'description' => 'Edit Announcement', 'group' => 'announcement'],

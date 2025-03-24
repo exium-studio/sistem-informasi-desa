@@ -8,6 +8,8 @@ use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
 use App\Models\FamilyCard;
 use App\Models\PopulationGrowth;
+use App\Models\Religion;
+use App\Models\Resident;
 use App\Models\Village;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,7 +21,7 @@ class PopulationController extends Controller
     public function index()
     {
         try {
-            if (!Gate::allows('dashboard.view')) {
+            if (!Gate::allows('population.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -63,6 +65,80 @@ class PopulationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error('| Population Index | - Error : ' . $e->getMessage());
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'ERROR_GET_DATA',
+                    'Gagal Mengambil Data',
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function growthByReligion(Request $request)
+    {
+        try {
+            if (!Gate::allows('population.view')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
+            $year = $request->input('year', now()->year);
+
+            // Ambil semua agama
+            $religions = Religion::select('id', 'label')->get();
+
+            // Ambil data total per bulan per agama
+            $raw = Resident::selectRaw('residents.religion_id, EXTRACT(MONTH FROM users.register_at) AS month, COUNT(*) as total')
+                ->join('users', 'users.id', '=', 'residents.user_id')
+                ->whereYear('users.register_at', $year)
+                ->groupByRaw('residents.religion_id, EXTRACT(MONTH FROM users.register_at)')
+                ->get();
+
+            // Group data
+            $grouped = [];
+            foreach ($raw as $row) {
+                $rid = (int) $row->religion_id;
+                $month = (int) $row->month;
+                $grouped[$rid][$month] = (int) $row->total;
+            }
+
+            // Reformat hasil akhir
+            $result = [];
+            foreach ($religions as $religion) {
+                $monthly = [];
+                foreach (range(1, 12) as $month) {
+                    $monthly[] = $grouped[$religion->id][$month] ?? 0;
+                }
+
+                $result[] = [
+                    'religion_id' => $religion->id,
+                    'label' => $religion->label,
+                    'monthly' => $monthly,
+                ];
+            }
+
+            return response()->json(
+                new WithDataResource(
+                    Response::HTTP_OK,
+                    'SUCCESS_GET_DATA',
+                    'Berhasil Mengambil Data',
+                    'Data pertumbuhan penduduk berdasarkan agama berhasil didapatkan.',
+                    $result
+                ),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('| Population Growth By Religion | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,

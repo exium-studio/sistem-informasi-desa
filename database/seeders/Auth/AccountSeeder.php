@@ -31,13 +31,14 @@ class AccountSeeder extends Seeder
 
         foreach ($roles as $role) {
             if ($role !== 'Super Admin') {
-                for ($i = 1; $i <= 10; $i++) {
+                for ($i = 1; $i <= 50; $i++) {
                     $facilities = DB::table('facilities')->pluck('id')->toArray();
                     $document_types = DB::table('document_types')->pluck('id')->toArray();
 
                     // Generate random filters based on the number of IDs in the respective tables
                     $facilities_filter = $this->getRandomFromArray($facilities);
                     $document_type_filter = $this->getRandomFromArray($document_types);
+                    $registerDate = Carbon::create(2024, rand(1, 12), rand(1, 28));
 
                     $user = User::create([
                         'name' => $role . ' ' . $i,
@@ -47,9 +48,9 @@ class AccountSeeder extends Seeder
                         'password' => Hash::make('password123'),
                         'facilities_filter' => $facilities_filter,
                         'document_type_filter' => $document_type_filter,
-                        'register_at' => Carbon::now(),
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now()
+                        'register_at' => $registerDate,
+                        'created_at' => $registerDate,
+                        'updated_at' => $registerDate
                     ]);
 
                     $user->assignRole($role);
