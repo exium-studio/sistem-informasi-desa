@@ -14,22 +14,26 @@ class PopulationGrowthSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ambil semua user dengan account_status = 2
-        $activeUsers = PopulationGrowth::getUsersWithActiveStatus();
+        $startYear = now()->year - 4; // 5 tahun ke belakang termasuk tahun ini
+        $previousTotal = 40; // nilai awal penduduk (dummy)
 
-        // Ambil semua user yang register_at sebelum tahun ini
-        $registeredBeforeThisYear = PopulationGrowth::getUsersRegisteredBeforeThisYear();
+        foreach (range($startYear, now()->year) as $year) {
+            $newCitizens = rand(50, 150);  // warga baru
+            $leaveCitizens = rand(20, 100); // warga pindah/meninggal
 
-        // Ambil semua user yang deactivate_at sebelum tahun ini
-        $deactivatedBeforeThisYear = PopulationGrowth::getUsersDeactivatedBeforeThisYear();
+            // Hitung total penduduk tahun ini
+            $currentTotal = max(0, $previousTotal + $newCitizens - $leaveCitizens);
 
-        PopulationGrowth::create([
-            'citizen_total' => $activeUsers->count(),
-            'new_citizen_total' => $registeredBeforeThisYear->count(),
-            'leave_citizen_total' => $deactivatedBeforeThisYear->count(),
-            'year' => Carbon::now()->year,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+            PopulationGrowth::create([
+                'citizen_total' => $currentTotal,
+                'new_citizen_total' => $newCitizens,
+                'leave_citizen_total' => $leaveCitizens,
+                'year' => $year,
+                'created_at' => Carbon::create($year, 12, 31),
+                'updated_at' => Carbon::create($year, 12, 31),
+            ]);
+
+            $previousTotal = $currentTotal;
+        }
     }
 }

@@ -59,7 +59,7 @@ class PopulationGrowth extends Model
     public static function getUsersRegisteredBeforeThisYear()
     {
         $startOfYear = Carbon::now()->startOfYear(); // 1 Januari tahun ini
-        return User::where('register_at', '<', $startOfYear)->get();
+        return User::where('id', '!=', 1)->where('register_at', '<', $startOfYear)->get();
     }
 
     /**
@@ -69,7 +69,8 @@ class PopulationGrowth extends Model
     {
         $startOfYear = Carbon::now()->startOfYear(); // 1 Januari tahun ini
         return User::where(function ($query) use ($startOfYear) {
-            $query->where('deactivate_at', '<', $startOfYear)
+            $query->where('id', '!=', 1)
+                ->where('deactivate_at', '<', $startOfYear)
                 ->orWhereNotNull('deactivate_at');
         })->get();
     }
