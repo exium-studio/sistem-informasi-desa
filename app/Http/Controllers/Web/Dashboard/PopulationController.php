@@ -94,37 +94,40 @@ class PopulationController extends Controller
 
             $year = $request->input('year', now()->year);
 
-            // Ambil semua agama
+            // Ambil daftar agama
             $religions = Religion::select('id', 'label')->get();
 
-            // Ambil data total per bulan per agama
+            // Ambil data per agama & bulan
             $raw = Resident::selectRaw('residents.religion_id, EXTRACT(MONTH FROM users.register_at) AS month, COUNT(*) as total')
                 ->join('users', 'users.id', '=', 'residents.user_id')
                 ->whereYear('users.register_at', $year)
                 ->groupByRaw('residents.religion_id, EXTRACT(MONTH FROM users.register_at)')
                 ->get();
 
-            // Group data
-            $grouped = [];
+            // Map data ke bentuk: [month][agama_label] = total
+            $monthlyData = [];
+
             foreach ($raw as $row) {
-                $rid = (int) $row->religion_id;
                 $month = (int) $row->month;
-                $grouped[$rid][$month] = (int) $row->total;
+                $label = $religions->firstWhere('id', $row->religion_id)?->label ?? 'Lainnya';
+                $monthlyData[$month][$label] = (int) $row->total;
             }
 
-            // Reformat hasil akhir
+            // Final formatting
             $result = [];
-            foreach ($religions as $religion) {
-                $monthly = [];
-                foreach (range(1, 12) as $month) {
-                    $monthly[] = $grouped[$religion->id][$month] ?? 0;
+            foreach (range(1, 12) as $month) {
+                $data = $monthlyData[$month] ?? [];
+
+                $row = [
+                    'total_population' => array_sum($data),
+                ];
+
+                foreach ($religions as $religion) {
+                    $label = $religion->label;
+                    $row[$label] = $data[$label] ?? 0;
                 }
 
-                $result[] = [
-                    'religion_id' => $religion->id,
-                    'label' => $religion->label,
-                    'monthly' => $monthly,
-                ];
+                $result[] = $row;
             }
 
             return response()->json(
