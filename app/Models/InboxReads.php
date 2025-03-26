@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\HasArrayRelations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,21 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Inbox extends Model
+class InboxReads extends Model
 {
-    use HasFactory, SoftDeletes, HasArrayRelations;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 
-    protected $table = 'inboxes';
-
-    protected $appends = ['received_user'];
+    protected $table = 'inbox_reads';
 
     protected $casts = [
-        'created_by' => 'integer',
-        'received_by' => 'array',
-        'inbox_type_id' => 'integer',
-        'is_verified' => 'boolean',
+        'inbox_id' => 'integer',
+        'user_id' => 'integer',
+        'is_read' => 'boolean',
+        'read_at' => 'datetime:UTC',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -49,31 +46,23 @@ class Inbox extends Model
         );
     }
 
-    public function getReceivedUserAttribute()
-    {
-        return $this->resolveArrayRelation(
-            $this->received_by,
-            User::class
-        );
-    }
-
     /**
-     * Get the created_user that owns the Inbox
+     * Get the created_inbox that owns the Inbox
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function created_user(): BelongsTo
+    public function created_inbox(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by', 'id');
+        return $this->belongsTo(Inbox::class, 'inbox_id', 'id');
     }
 
     /**
-     * Get the inbox_type that owns the Inbox
+     * Get the user_reading that owns the Inbox
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function inbox_type(): BelongsTo
+    public function user_reading(): BelongsTo
     {
-        return $this->belongsTo(InboxType::class, 'inbox_type_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

@@ -8,6 +8,7 @@ use Database\Seeders\Auth\RoleSeeder;
 use Database\Seeders\Features\AnnouncementSeeder;
 use Database\Seeders\Features\DocumentSeeder;
 use Database\Seeders\Features\FamilyCardSeeder;
+use Database\Seeders\Features\InboxSeeder;
 use Database\Seeders\Features\IncomeOutcomeSeeder;
 use Database\Seeders\Features\JobTitleSeeder;
 use Database\Seeders\Features\PopulationGrowthSeeder;
@@ -23,6 +24,7 @@ use Database\Seeders\Gens\OfficialContactSeeder;
 use Database\Seeders\Gens\RelationshipStatusSeeder;
 use Database\Seeders\Gens\ReligionSeeder;
 use Database\Seeders\Static\DocumentStatusSeeder;
+use Database\Seeders\Static\InboxTypeSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -36,6 +38,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // Statics
             DocumentStatusSeeder::class,
+            InboxTypeSeeder::class,
 
             // Gens
             BloodTypeSeeder::class,
@@ -60,6 +63,7 @@ class DatabaseSeeder extends Seeder
             FamilyCardSeeder::class,
             PopulationGrowthSeeder::class,
             AnnouncementSeeder::class,
+            InboxSeeder::class,
             IncomeOutcomeSeeder::class,
         ]);
     }

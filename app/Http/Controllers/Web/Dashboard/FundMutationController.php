@@ -63,13 +63,13 @@ class FundMutationController extends Controller
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            // Log::error('| Fund Mutation Index | - Error : ' . $e->getMessage());
+            Log::error('| Fund Mutation Index | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
                     'ERROR_GET_DATA',
                     'Gagal Mengambil Data',
-                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin. ' . $e->getMessage(),
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );

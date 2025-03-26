@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('inboxes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('received_by')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->jsonb('received_by');
             $table->foreignId('inbox_type_id')->constrained('inbox_types')->onDelete('cascade')->onUpdate('cascade');
             $table->text('message');
-            $table->boolean('is_read')->default(0); // yang belum dibaca
             $table->boolean('is_verified')->default(0); // yang butuh verifikasi
             $table->softDeletesTz();
             $table->timestampsTz();
