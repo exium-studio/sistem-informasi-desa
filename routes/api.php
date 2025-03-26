@@ -32,6 +32,7 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 			Route::group(['prefix' => 'dashboard'], function () {
 				Route::get('/population', [PopulationController::class, 'index']);
 				Route::post('/population-growth', [PopulationController::class, 'growthPerYear']);
+				Route::post('/current-population', [PopulationController::class, 'growthSummary']);
 				Route::apiResource('/announcement', AnnouncementController::class);
 				Route::apiResource('/official-contact', OfficialContactController::class);
 				Route::get('/village', [VillageIndexController::class, 'index']);

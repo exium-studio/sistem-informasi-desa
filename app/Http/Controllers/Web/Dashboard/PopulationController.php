@@ -95,14 +95,14 @@ class PopulationController extends Controller
                 );
             }
 
-            $year = $request->input('year', now()->year);
+            $year = (int) $request->input('year', now()->year);
 
             $result = [
-                'religion' => $this->getPopulationByReligion($year),
-                'education' => $this->getPopulationByEducation($year),
-                'married_status' => $this->getPopulationByMariedStatus($year),
-                'citizenship' => $this->getPopulationByCitizenship($year),
-                'gender' => $this->getPopulationByGender($year),
+                'religion' => $this->getPopulationPerYearByReligion($year),
+                'education' => $this->getPopulationPerYearByEducation($year),
+                'married_status' => $this->getPopulationPerYearByMariedStatus($year),
+                'citizenship' => $this->getPopulationPerYearByCitizenship($year),
+                'gender' => $this->getPopulationPerYearByGender($year),
             ];
 
             return response()->json(
@@ -110,7 +110,7 @@ class PopulationController extends Controller
                     Response::HTTP_OK,
                     'SUCCESS_GET_DATA',
                     'Berhasil Mengambil Data',
-                    'Data pertumbuhan penduduk berhasil didapatkan.',
+                    'Data pertumbuhan penduduk per tahun berhasil didapatkan.',
                     $result
                 ),
                 Response::HTTP_OK
@@ -129,7 +129,59 @@ class PopulationController extends Controller
         }
     }
 
-    private function getPopulationByReligion(int $year): array
+    public function growthSummary(Request $request)
+    {
+        try {
+            if (!Gate::allows('population.view')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
+            $year = (int) $request->input('year', now()->year);
+            $month = (int) $request->input('month', now()->month); // ← ambil dari payload
+            $monthLimit = max($month - 1, 0); // kalau bulan Januari, jadi 0 (tidak ada data)
+
+            $result = [
+                'religion' => $this->getSummaryByReligion($year, $monthLimit),
+                'education' => $this->getSummaryByEducation($year, $monthLimit),
+                'maried_status' => $this->getSummaryByMariedStatus($year, $monthLimit),
+                'citizenship' => $this->getSummaryByCitizenship($year, $monthLimit),
+                'gender' => $this->getSummaryByGender($year, $monthLimit),
+            ];
+
+            return response()->json(
+                new WithDataResource(
+                    Response::HTTP_OK,
+                    'SUCCESS_GET_DATA',
+                    'Berhasil Mengambil Data',
+                    'Data pertumbuhan penduduk per saat ini berhasil didapatkan.',
+                    $result
+                ),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('| Population Growth By Religion | - Error : ' . $e->getMessage());
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'ERROR_GET_DATA',
+                    'Gagal Mengambil Data',
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    // Growth Per Year
+    private function getPopulationPerYearByReligion(int $year): array
     {
         $labels = Religion::select('id', 'label')->get();
 
@@ -143,7 +195,7 @@ class PopulationController extends Controller
         return $this->formatPopulationByCategory($raw, $labels, 'religion_id');
     }
 
-    private function getPopulationByEducation(int $year): array
+    private function getPopulationPerYearByEducation(int $year): array
     {
         $labels = Education::select('id', 'label')->get();
 
@@ -157,7 +209,7 @@ class PopulationController extends Controller
         return $this->formatPopulationByCategory($raw, $labels, 'education_id');
     }
 
-    private function getPopulationByMariedStatus(int $year): array
+    private function getPopulationPerYearByMariedStatus(int $year): array
     {
         $labels = MariedStatus::select('id', 'label')->get();
 
@@ -171,7 +223,7 @@ class PopulationController extends Controller
         return $this->formatPopulationByCategory($raw, $labels, 'maried_status_id');
     }
 
-    private function getPopulationByCitizenship(int $year): array
+    private function getPopulationPerYearByCitizenship(int $year): array
     {
         $citizenships = Citizenship::select('id', 'label')->get();
 
@@ -215,7 +267,7 @@ class PopulationController extends Controller
         return $result;
     }
 
-    private function getPopulationByGender(int $year): array
+    private function getPopulationPerYearByGender(int $year): array
     {
         // Query gender boolean + bulan + total
         $raw = Resident::selectRaw('residents.gender, EXTRACT(MONTH FROM users.register_at) AS month, COUNT(*) as total')
@@ -276,5 +328,129 @@ class PopulationController extends Controller
         }
 
         return $result;
+    }
+
+    // Growth Summary (Live Tahun ini)
+    private function getSummaryByReligion(int $year, int $monthLimit): array
+    {
+        if ($monthLimit === 0) return [];
+
+        $labels = Religion::select('id', 'label')->get();
+
+        $raw = Resident::selectRaw('religion_id, COUNT(*) as total')
+            ->join('users', 'users.id', '=', 'residents.user_id')
+            ->where('users.id', '!=', 1)
+            ->whereYear('users.register_at', $year)
+            ->whereMonth('users.register_at', '<=', $monthLimit)
+            ->groupBy('religion_id')
+            ->get();
+
+        return $raw->map(function ($row) use ($labels) {
+            $label = $labels->firstWhere('id', $row->religion_id)?->label ?? 'Lainnya';
+            return [
+                'label' => $label,
+                'total_population' => (int) $row->total,
+            ];
+        })->toArray();
+    }
+
+    private function getSummaryByEducation(int $year, int $monthLimit): array
+    {
+        if ($monthLimit === 0) return [];
+
+        $labels = Education::select('id', 'label')->get();
+
+        $raw = Resident::selectRaw('education_id, COUNT(*) as total')
+            ->join('users', 'users.id', '=', 'residents.user_id')
+            ->where('users.id', '!=', 1)
+            ->whereYear('users.register_at', $year)
+            ->whereMonth('users.register_at', '<=', $monthLimit)
+            ->groupBy('education_id')
+            ->get();
+
+        return $raw->map(function ($row) use ($labels) {
+            $label = $labels->firstWhere('id', $row->education_id)?->label ?? 'Lainnya';
+            return [
+                'label' => $label,
+                'total_population' => (int) $row->total,
+            ];
+        })->toArray();
+    }
+
+    private function getSummaryByMariedStatus(int $year, int $monthLimit): array
+    {
+        if ($monthLimit === 0) return [];
+
+        $labels = MariedStatus::select('id', 'label')->get();
+
+        $raw = Resident::selectRaw('maried_status_id, COUNT(*) as total')
+            ->join('users', 'users.id', '=', 'residents.user_id')
+            ->where('users.id', '!=', 1)
+            ->whereYear('users.register_at', $year)
+            ->whereMonth('users.register_at', '<=', $monthLimit)
+            ->groupBy('maried_status_id')
+            ->get();
+
+        return $raw->map(function ($row) use ($labels) {
+            $label = $labels->firstWhere('id', $row->maried_status_id)?->label ?? 'Lainnya';
+            return [
+                'label' => $label,
+                'total_population' => (int) $row->total,
+            ];
+        })->toArray();
+    }
+
+    private function getSummaryByCitizenship(int $year, int $monthLimit): array
+    {
+        if ($monthLimit === 0) return [];
+
+        $citizenships = Citizenship::select('id', 'label')->get();
+
+        $groupMap = $citizenships->mapWithKeys(function ($item) {
+            $group = $item->label === 'Indonesia' ? 'WNI' : 'WNA';
+            return [$item->id => $group];
+        });
+
+        $raw = Resident::selectRaw('citizenship_id, COUNT(*) as total')
+            ->join('users', 'users.id', '=', 'residents.user_id')
+            ->where('users.id', '!=', 1)
+            ->whereYear('users.register_at', $year)
+            ->whereMonth('users.register_at', '<=', $monthLimit)
+            ->groupBy('citizenship_id')
+            ->get();
+
+        // Akumulasi berdasarkan grup
+        $grouped = [];
+
+        foreach ($raw as $row) {
+            $group = $groupMap[$row->citizenship_id] ?? 'Lainnya';
+            $grouped[$group] = ($grouped[$group] ?? 0) + $row->total;
+        }
+
+        // Format output
+        return collect($grouped)->map(fn($total, $label) => [
+            'label' => $label,
+            'total_population' => $total,
+        ])->values()->toArray();
+    }
+
+    private function getSummaryByGender(int $year, int $monthLimit): array
+    {
+        if ($monthLimit === 0) return [];
+
+        $raw = Resident::selectRaw('gender, COUNT(*) as total')
+            ->join('users', 'users.id', '=', 'residents.user_id')
+            ->where('users.id', '!=', 1)
+            ->whereYear('users.register_at', $year)
+            ->whereMonth('users.register_at', '<=', $monthLimit)
+            ->groupBy('gender')
+            ->get();
+
+        return $raw->map(function ($row) {
+            return [
+                'label' => $row->gender ? 'Laki-laki' : 'Perempuan',
+                'total_population' => (int) $row->total,
+            ];
+        })->toArray();
     }
 }

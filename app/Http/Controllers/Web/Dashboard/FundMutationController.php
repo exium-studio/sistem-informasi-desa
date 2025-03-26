@@ -29,23 +29,41 @@ class FundMutationController extends Controller
                 );
             }
 
-            $year = $request->input('year', now()->year);
+            $year = (int) $request->input('year', now()->year);
+            $month = (int) $request->input('month', now()->month);
+            $monthLimit = max($month - 1, 0);
 
-            // Ambil data income
-            $incomeData = Income::selectRaw('EXTRACT(MONTH FROM created_at) as month, SUM(value) as total')
-                ->whereYear('created_at', $year)
-                ->groupByRaw('EXTRACT(MONTH FROM created_at)')
+            // Kalau bulan pertama, return kosong
+            if ($monthLimit === 0) {
+                return response()->json(
+                    new WithDataResource(
+                        Response::HTTP_OK,
+                        'SUCCESS_GET_DATA',
+                        'Berhasil Mengambil Data',
+                        'Data pendanaan berhasil didapatkan.',
+                        []
+                    ),
+                    Response::HTTP_OK
+                );
+            }
+
+            // Ambil income berdasarkan realization_date
+            $incomeData = Income::selectRaw('EXTRACT(MONTH FROM realization_date) as month, SUM(value) as total')
+                ->whereYear('realization_date', $year)
+                ->whereMonth('realization_date', '<=', $monthLimit)
+                ->groupByRaw('EXTRACT(MONTH FROM realization_date)')
                 ->pluck('total', 'month');
 
-            // Ambil data expense
-            $expenseData = Expenses::selectRaw('EXTRACT(MONTH FROM created_at) as month, SUM(value) as total')
-                ->whereYear('created_at', $year)
-                ->groupByRaw('EXTRACT(MONTH FROM created_at)')
+            // Ambil expense berdasarkan realization_date
+            $expenseData = Expenses::selectRaw('EXTRACT(MONTH FROM realization_date) as month, SUM(value) as total')
+                ->whereYear('realization_date', $year)
+                ->whereMonth('realization_date', '<=', $monthLimit)
+                ->groupByRaw('EXTRACT(MONTH FROM realization_date)')
                 ->pluck('total', 'month');
 
             $result = [];
 
-            foreach (range(1, 12) as $i) {
+            foreach (range(1, $monthLimit) as $i) {
                 $result[] = [
                     'income' => (int) ($incomeData[$i] ?? 0),
                     'expense' => (int) ($expenseData[$i] ?? 0),
