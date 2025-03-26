@@ -27,7 +27,7 @@ class InventoriesSeeder extends Seeder
                 'description' => 'Keterangan inventaris: ' . Str::random(30),
                 'amount' => $amount,
                 'amount_usage' => $amountUsage,
-                'image' => $this->generateRandomDocumentIds($documents),
+                'image_file' => $this->generateRandomDocumentIds($documents),
                 'created_at' => Carbon::now()->subDays(rand(0, 30)),
                 'updated_at' => Carbon::now(),
             ]);

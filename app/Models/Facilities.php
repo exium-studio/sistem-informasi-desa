@@ -20,7 +20,7 @@ class Facilities extends Model
 
     protected $casts = [
         'location' => 'array',
-        'image' => 'array',
+        'image_file' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -48,7 +48,7 @@ class Facilities extends Model
     public function getDocumentsAttribute()
     {
         return $this->resolveArrayRelation(
-            $this->image,
+            $this->image_file,
             Document::class,
             ['document_status', 'uploaded_user', 'verified_user']
         );

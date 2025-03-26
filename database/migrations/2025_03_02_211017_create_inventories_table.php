@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->integer('amount')->default(0);
             $table->integer('amount_usage')->default(0);
-            $table->jsonb('image')->nullable(); // Max upload 3 file
+            $table->jsonb('image_file')->nullable(); // Max upload 3 file
             $table->softDeletesTz();
             $table->timestampsTz();
         });

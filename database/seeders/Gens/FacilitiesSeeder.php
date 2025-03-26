@@ -39,7 +39,7 @@ class FacilitiesSeeder extends Seeder
                     'lat' => rand(-90, 90),
                     'long' => rand(-180, 180)
                 ],
-                'image' => $this->generateRandomDocumentIds($documents),
+                'image_file' => $this->generateRandomDocumentIds($documents),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
