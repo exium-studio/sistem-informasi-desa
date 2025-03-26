@@ -46,8 +46,10 @@ class AnnouncementSeeder extends Seeder
      */
     private function generateRandomDocumentIds($documentIds)
     {
+        if (empty($documentIds)) return [];
+
         shuffle($documentIds);
-        $randomCount = rand(1, 3);
+        $randomCount = rand(1, min(3, count($documentIds)));
         return array_slice($documentIds, 0, $randomCount);
     }
 }

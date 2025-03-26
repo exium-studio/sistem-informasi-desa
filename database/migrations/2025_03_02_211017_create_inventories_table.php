@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_types', function (Blueprint $table) {
+        Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->string('label');
-            $table->enum('category', ['resident', 'civil']);
+            $table->string('name');
             $table->string('description')->nullable();
-            $table->integer('max_upload')->nullable(); // Format byte
+            $table->integer('amount')->default(0);
+            $table->integer('amount_usage')->default(0);
+            $table->jsonb('image')->nullable(); // Max upload 3 file
             $table->softDeletesTz();
             $table->timestampsTz();
         });
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('inventories');
     }
 };

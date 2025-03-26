@@ -2,6 +2,8 @@
 
 namespace Database\Seeders\Gens;
 
+use App\Models\Document;
+use App\Models\Facilities;
 use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,6 +16,8 @@ class FacilitiesSeeder extends Seeder
      */
     public function run(): void
     {
+        $documents = Document::pluck('id')->toArray();
+
         $facilities = [
             ['name' => 'Masjid', 'description' => 'Tempat ibadah umat Islam untuk melaksanakan salat dan kegiatan keagamaan lainnya.'],
             ['name' => 'Lapangan', 'description' => 'Area terbuka yang digunakan untuk olahraga, upacara, dan berbagai kegiatan masyarakat.'],
@@ -28,12 +32,29 @@ class FacilitiesSeeder extends Seeder
         ];
 
         foreach ($facilities as $facility) {
-            DB::table('facilities')->insert([
+            Facilities::create([
                 'name' => $facility['name'],
                 'description' => $facility['description'],
+                'location' => [
+                    'lat' => rand(-90, 90),
+                    'long' => rand(-180, 180)
+                ],
+                'image' => $this->generateRandomDocumentIds($documents),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
         }
+    }
+
+    /**
+     * Fungsi untuk menghasilkan array document_id secara acak
+     */
+    private function generateRandomDocumentIds(array $documentIds): array
+    {
+        if (empty($documentIds)) return [];
+
+        shuffle($documentIds);
+        $randomCount = rand(1, min(3, count($documentIds)));
+        return array_slice($documentIds, 0, $randomCount);
     }
 }

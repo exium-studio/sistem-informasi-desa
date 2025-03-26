@@ -18,6 +18,7 @@ use Database\Seeders\Gens\CitizenshipSeeder;
 use Database\Seeders\Gens\DocumentTypeSeeder;
 use Database\Seeders\Gens\EducationSeeder;
 use Database\Seeders\Gens\FacilitiesSeeder;
+use Database\Seeders\Gens\InventoriesSeeder;
 use Database\Seeders\Gens\JobTypeSeeder;
 use Database\Seeders\Gens\MariedStatusSeeder;
 use Database\Seeders\Gens\OfficialContactSeeder;
@@ -65,6 +66,7 @@ class DatabaseSeeder extends Seeder
             AnnouncementSeeder::class,
             InboxSeeder::class,
             IncomeOutcomeSeeder::class,
+            InventoriesSeeder::class
         ]);
     }
 }

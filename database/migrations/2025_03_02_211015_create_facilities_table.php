@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description')->nullable();
+            $table->jsonb('location');
+            $table->jsonb('image')->nullable(); // Max upload 3 file
             $table->softDeletesTz();
             $table->timestampsTz();
         });
