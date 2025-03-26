@@ -16,9 +16,11 @@ class EducationSeeder extends Seeder
     {
         $educations = [
             'Tidak/Belum Sekolah',
-            'SD/Sederajat',
-            'SMP/Sederajat',
-            'SMA/Sederajat',
+            'TK/PAUD',
+            'SD',
+            'SMP',
+            'SMA',
+            'SMK',
             'Diploma I (D1)',
             'Diploma II (D2)',
             'Diploma III (D3)',
