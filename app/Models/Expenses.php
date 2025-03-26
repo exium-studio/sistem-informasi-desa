@@ -19,7 +19,9 @@ class Expenses extends Model
 
     protected $casts = [
         'created_by' => 'integer',
+        'expense_category_id' => 'integer',
         'value' => 'integer',
+        'realization_date' => 'datetime:UTC',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -52,5 +54,15 @@ class Expenses extends Model
     public function created_user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
+    /**
+     * Get the expense_category that owns the Expenses
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function expense_category(): BelongsTo
+    {
+        return $this->belongsTo(ExpenseCategory::class, 'expense_category_id', 'id');
     }
 }

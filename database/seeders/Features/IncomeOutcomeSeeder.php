@@ -2,8 +2,10 @@
 
 namespace Database\Seeders\Features;
 
+use App\Models\ExpenseCategory;
 use App\Models\Expenses;
 use App\Models\Income;
+use App\Models\IncomeSource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -18,6 +20,9 @@ class IncomeOutcomeSeeder extends Seeder
     public function run()
     {
         $userIds = User::where('id', '!=', 1)->pluck('id')->toArray();
+        $incomeSourceIds = IncomeSource::pluck('id')->toArray();
+        $expenseCategoryIds = ExpenseCategory::pluck('id')->toArray();
+
         $year = now()->year;
 
         $incomeDescriptions = [
@@ -46,21 +51,29 @@ class IncomeOutcomeSeeder extends Seeder
             $numEntries = rand(2, 3); // Jumlah data per bulan
 
             for ($i = 0; $i < $numEntries; $i++) {
+                $date = Carbon::create($year, $month, rand(1, 28), rand(8, 18));
+
                 Income::create([
                     'created_by' => $userIds[array_rand($userIds)],
+                    'income_source_id' => $incomeSourceIds[array_rand($incomeSourceIds)],
                     'value' => rand(100_000, 5_000_000),
                     'description' => $incomeDescriptions[array_rand($incomeDescriptions)],
-                    'created_at' => Carbon::create($year, $month, rand(1, 28), rand(8, 18)),
+                    'realization_date' => $date,
+                    'created_at' => $date,
                     'updated_at' => now(),
                 ]);
             }
 
             for ($i = 0; $i < $numEntries; $i++) {
+                $date = Carbon::create($year, $month, rand(1, 28), rand(8, 18));
+
                 Expenses::create([
                     'created_by' => $userIds[array_rand($userIds)],
+                    'expense_category_id' => $expenseCategoryIds[array_rand($expenseCategoryIds)],
                     'value' => rand(50_000, 4_000_000),
                     'description' => $expenseDescriptions[array_rand($expenseDescriptions)],
-                    'created_at' => Carbon::create($year, $month, rand(1, 28), rand(8, 18)),
+                    'realization_date' => $date,
+                    'created_at' => $date,
                     'updated_at' => now(),
                 ]);
             }

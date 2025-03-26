@@ -17,7 +17,9 @@ use Database\Seeders\Gens\BloodTypeSeeder;
 use Database\Seeders\Gens\CitizenshipSeeder;
 use Database\Seeders\Gens\DocumentTypeSeeder;
 use Database\Seeders\Gens\EducationSeeder;
+use Database\Seeders\Gens\ExpenseCategoriesSeeder;
 use Database\Seeders\Gens\FacilitiesSeeder;
+use Database\Seeders\Gens\IncomeSourcesSeeder;
 use Database\Seeders\Gens\InventoriesSeeder;
 use Database\Seeders\Gens\JobTypeSeeder;
 use Database\Seeders\Gens\MariedStatusSeeder;
@@ -51,6 +53,8 @@ class DatabaseSeeder extends Seeder
             RelationshipStatusSeeder::class,
             ReligionSeeder::class,
             FacilitiesSeeder::class,
+            ExpenseCategoriesSeeder::class,
+            IncomeSourcesSeeder::class,
 
             // Auth
             PermissionSeeder::class,

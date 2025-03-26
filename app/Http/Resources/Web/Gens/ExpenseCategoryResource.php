@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Web;
+namespace App\Http\Resources\Web\Gens;
 
-use App\Http\Resources\Web\Gens\IncomeSourceResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class IncomeResource extends JsonResource
+class ExpenseCategoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,10 +16,7 @@ class IncomeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'income_source' => new IncomeSourceResource($this->income_scoure),
-            'value' => $this->value,
-            'description' => $this->description,
-            'realization_date' => $this->realization_date,
+            'label' => $this->label,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at

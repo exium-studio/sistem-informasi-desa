@@ -6,22 +6,17 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Income extends Model
+class ExpenseCategory extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $guarded = ['id'];
 
-    protected $table = 'incomes';
+    protected $table = 'expense_categories';
 
     protected $casts = [
-        'created_by' => 'integer',
-        'income_source_id' => 'integer',
-        'value' => 'integer',
-        'realization_date' => 'datetime:UTC',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -44,25 +39,5 @@ class Income extends Model
             get: fn($value) => Carbon::parse($value)->setTimezone('UTC'),
             set: fn($value) => Carbon::parse($value)->setTimezone('UTC')
         );
-    }
-
-    /**
-     * Get the created_user
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function created_user(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'created_by', 'id');
-    }
-
-    /**
-     * Get the income_scoure that owns the Income
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function income_scoure(): BelongsTo
-    {
-        return $this->belongsTo(IncomeSource::class, 'income_source_id', 'id');
     }
 }
