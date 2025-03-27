@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Web\Dashboard\AnnouncementController;
 use App\Http\Controllers\Web\Dashboard\FacilityController;
 use App\Http\Controllers\Web\Dashboard\FundMutationController;
+use App\Http\Controllers\Web\Dashboard\InventoryController;
 use App\Http\Controllers\Web\Dashboard\OfficialContactController;
 use App\Http\Controllers\Web\Dashboard\PopulationController;
 use App\Http\Controllers\Web\Dashboard\VillageIndexController;
@@ -35,6 +36,7 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 				Route::post('/population-growth', [PopulationController::class, 'growthPerYear']);
 				Route::post('/current-population', [PopulationController::class, 'growthSummary']);
 				Route::get('/facility', [FacilityController::class, 'index']);
+				Route::get('/inventory', [InventoryController::class, 'index']);
 				Route::apiResource('/announcement', AnnouncementController::class);
 				Route::apiResource('/official-contact', OfficialContactController::class);
 				Route::get('/village', [VillageIndexController::class, 'index']);
