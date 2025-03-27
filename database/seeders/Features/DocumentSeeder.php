@@ -24,8 +24,8 @@ class DocumentSeeder extends Seeder
             $statusId = $statuses[array_rand($statuses)];
             Document::create([
                 'document_status_id' => $statusId,
-                'verified_by' => rand(0, 1) ? $users[array_rand($users)] : null,
-                'uploaded_by' => rand(0, 1) ? $users[array_rand($users)] : null,
+                'verified_by' => $users[array_rand($users)],
+                'uploaded_by' => $users[array_rand($users)],
                 'file_id' => Str::uuid(),
                 'file_name' => 'document_' . ($i + 1) . '.pdf',
                 'file_path' => 'uploads/documents/document_' . ($i + 1) . '.pdf',

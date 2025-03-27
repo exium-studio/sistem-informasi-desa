@@ -21,7 +21,7 @@ class Inventory extends Model
     protected $casts = [
         'amount' => 'integer',
         'amount_usage' => 'integer',
-        'image_file' => 'array',
+        'document_id' => 'array',
         'created_at' => 'datetime:UTC',
         'updated_at' => 'datetime:UTC',
         'delete_at' => 'datetime:UTC',
@@ -49,7 +49,7 @@ class Inventory extends Model
     public function getDocumentsAttribute()
     {
         return $this->resolveArrayRelation(
-            $this->image_file,
+            $this->document_id,
             Document::class,
             ['document_status', 'uploaded_user', 'verified_user']
         );

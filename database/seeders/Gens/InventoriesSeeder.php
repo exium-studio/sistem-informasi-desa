@@ -16,7 +16,7 @@ class InventoriesSeeder extends Seeder
      */
     public function run(): void
     {
-        $documents = Document::pluck('id')->toArray();
+        $documentIds = Document::pluck('id')->toArray();
 
         foreach (range(1, 10) as $i) {
             $amount = rand(5, 50);
@@ -27,7 +27,7 @@ class InventoriesSeeder extends Seeder
                 'description' => 'Keterangan inventaris: ' . Str::random(30),
                 'amount' => $amount,
                 'amount_usage' => $amountUsage,
-                'image_file' => $this->generateRandomDocumentIds($documents),
+                'document_id' => $this->generateRandomDocumentIds($documentIds),
                 'created_at' => Carbon::now()->subDays(rand(0, 30)),
                 'updated_at' => Carbon::now(),
             ]);
@@ -37,7 +37,7 @@ class InventoriesSeeder extends Seeder
     /**
      * Fungsi untuk menghasilkan array document_id secara acak
      */
-    private function generateRandomDocumentIds(array $documentIds): array
+    private function generateRandomDocumentIds($documentIds)
     {
         if (empty($documentIds)) return [];
 

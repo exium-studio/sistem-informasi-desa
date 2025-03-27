@@ -16,6 +16,8 @@ class PermissionSeeder extends Seeder
         $permissions = [
             // Dashboard section
             ['name' => 'population.view', 'description' => 'View Population', 'group' => 'population'],
+            ['name' => 'village.view', 'description' => 'View Village', 'group' => 'village'],
+            ['name' => 'village.edit', 'description' => 'Edit Village', 'group' => 'village'],
             ['name' => 'announcement.view', 'description' => 'View Announcement', 'group' => 'announcement'],
             ['name' => 'announcement.create', 'description' => 'Create Announcement', 'group' => 'announcement'],
             ['name' => 'announcement.edit', 'description' => 'Edit Announcement', 'group' => 'announcement'],
@@ -24,9 +26,14 @@ class PermissionSeeder extends Seeder
             ['name' => 'officialcontact.create', 'description' => 'Create Official Contact', 'group' => 'official_contact'],
             ['name' => 'officialcontact.edit', 'description' => 'Edit Official Contact', 'group' => 'official_contact'],
             ['name' => 'officialcontact.delete', 'description' => 'Delete Official Contact', 'group' => 'official_contact'],
-            ['name' => 'village.view', 'description' => 'View Village', 'group' => 'village'],
-            ['name' => 'village.edit', 'description' => 'Edit Village', 'group' => 'village'],
+            ['name' => 'facility.view', 'description' => 'View Facility', 'group' => 'facility'],
+            ['name' => 'facility.create', 'description' => 'Create Facility', 'group' => 'facility'],
+            ['name' => 'facility.edit', 'description' => 'Edit Facility', 'group' => 'facility'],
+            ['name' => 'facility.delete', 'description' => 'Delete Facility', 'group' => 'facility'],
             ['name' => 'fundmutation.view', 'description' => 'View Fund Mutation', 'group' => 'fund_mutation'],
+            ['name' => 'fundmutation.create', 'description' => 'Create Fund Mutation', 'group' => 'fund_mutation'],
+            ['name' => 'fundmutation.edit', 'description' => 'Edit Fund Mutation', 'group' => 'fund_mutation'],
+            ['name' => 'fundmutation.delete', 'description' => 'Delete Fund Mutation', 'group' => 'fund_mutation'],
 
             // Header section
             ['name' => 'inbox.view', 'description' => 'View Inbox', 'group' => 'inbox'],

@@ -5,7 +5,7 @@ namespace App\Http\Resources\Web\Dashboard;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AnnouncementResource extends JsonResource
+class FacilityResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,12 +16,9 @@ class AnnouncementResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'created_by' => $this->user,
-            'title' => $this->title,
+            'name' => $this->name,
             'description' => $this->description,
             'location' => $this->location,
-            'published_at' => $this->published_at,
-            'expires_at' => $this->expires_at,
             'documents' => $this->documents,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

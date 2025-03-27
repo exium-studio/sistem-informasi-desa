@@ -16,7 +16,7 @@ class FacilitiesSeeder extends Seeder
      */
     public function run(): void
     {
-        $documents = Document::pluck('id')->toArray();
+        $documentIds = Document::pluck('id')->toArray();
 
         $facilities = [
             ['name' => 'Masjid', 'description' => 'Tempat ibadah umat Islam untuk melaksanakan salat dan kegiatan keagamaan lainnya.'],
@@ -39,7 +39,7 @@ class FacilitiesSeeder extends Seeder
                     'lat' => rand(-90, 90),
                     'long' => rand(-180, 180)
                 ],
-                'document_id' => $this->generateRandomDocumentIds($documents),
+                'document_id' => $this->generateRandomDocumentIds($documentIds),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -49,7 +49,7 @@ class FacilitiesSeeder extends Seeder
     /**
      * Fungsi untuk menghasilkan array document_id secara acak
      */
-    private function generateRandomDocumentIds(array $documentIds): array
+    private function generateRandomDocumentIds($documentIds)
     {
         if (empty($documentIds)) return [];
 
