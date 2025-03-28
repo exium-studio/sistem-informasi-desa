@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Web\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
+use App\Models\ExpenseCategory;
 use App\Models\Expenses;
 use App\Models\Income;
+use App\Models\IncomeSource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
@@ -82,6 +84,124 @@ class FundMutationController extends Controller
             );
         } catch (\Exception $e) {
             Log::error('| Fund Mutation Index | - Error : ' . $e->getMessage());
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'ERROR_GET_DATA',
+                    'Gagal Mengambil Data',
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function getIncomePerSource(Request $request)
+    {
+        try {
+            if (!Gate::allows('fundmutation.view')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
+            $year = (int) $request->input('year', now()->year);
+
+            // Ambil label income_source
+            $sources = IncomeSource::select('id', 'label')->get();
+
+            // Ambil total income group by source
+            $raw = Income::selectRaw('income_source_id, SUM(value) as amount')
+                ->whereYear('realization_date', $year)
+                ->groupBy('income_source_id')
+                ->get();
+
+            // Format final output
+            $result = $raw->map(function ($item) use ($sources) {
+                $label = $sources->firstWhere('id', $item->income_source_id)?->label ?? 'Lainnya';
+                return [
+                    'label' => $label,
+                    'amount' => (int) $item->amount,
+                ];
+            })->toArray();
+
+            return response()->json(
+                new WithDataResource(
+                    Response::HTTP_OK,
+                    'SUCCESS_GET_DATA',
+                    'Berhasil Mengambil Data',
+                    'Rekap pemasukan berdasarkan sumber berhasil didapatkan.',
+                    $result
+                ),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('| Fund Mutation Get Income Per Source | - Error : ' . $e->getMessage());
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'ERROR_GET_DATA',
+                    'Gagal Mengambil Data',
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function getExpensePerCategory(Request $request)
+    {
+        try {
+            if (!Gate::allows('fundmutation.view')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
+            $year = (int) $request->input('year', now()->year);
+
+            // Ambil daftar kategori
+            $categories = ExpenseCategory::select('id', 'label')->get();
+
+            // Ambil total expense per kategori
+            $raw = Expenses::selectRaw('expense_category_id, SUM(value) as amount')
+                ->whereYear('realization_date', $year)
+                ->groupBy('expense_category_id')
+                ->get();
+
+            // Format output
+            $result = $raw->map(function ($item) use ($categories) {
+                $label = $categories->firstWhere('id', $item->expense_category_id)?->label ?? 'Lainnya';
+                return [
+                    'label' => $label,
+                    'amount' => (int) $item->amount,
+                ];
+            })->toArray();
+
+            return response()->json(
+                new WithDataResource(
+                    Response::HTTP_OK,
+                    'SUCCESS_GET_DATA',
+                    'Berhasil Mengambil Data',
+                    'Rekap pengeluaran berdasarkan kategori berhasil didapatkan.',
+                    $result
+                ),
+                Response::HTTP_OK
+            );
+        } catch (\Exception $e) {
+            Log::error('| Fund Mutation Get Expense Per Category | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,

@@ -41,6 +41,8 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 				Route::apiResource('/official-contact', OfficialContactController::class);
 				Route::get('/village', [VillageIndexController::class, 'index']);
 				Route::post('/fund-mutation', [FundMutationController::class, 'index']);
+				Route::post('/fund-mutation-income', [FundMutationController::class, 'getIncomePerSource']);
+				Route::post('/fund-mutation-expense', [FundMutationController::class, 'getExpensePerCategory']);
 			});
 		});
 	});
