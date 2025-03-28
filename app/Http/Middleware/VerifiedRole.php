@@ -27,6 +27,7 @@ class VerifiedRole
         }
 
         $roles = match ($type) {
+            'public' => ['Super Admin', 'Lurah', 'Kepala RW', 'Kepala RT', 'Warga Sipil'],
             'web' => ['Super Admin', 'Lurah', 'Kepala RW', 'Kepala RT'],
             'mobile' => ['Super Admin', 'Warga Sipil'],
             default => [],

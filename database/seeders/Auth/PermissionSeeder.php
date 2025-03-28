@@ -14,6 +14,9 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
+            // Public Request
+            ['name' => 'publicrequest.view', 'description' => 'View Public Request', 'group' => 'public_request'],
+
             // Dashboard section
             ['name' => 'population.view', 'description' => 'View Population', 'group' => 'population'],
             ['name' => 'village.view', 'description' => 'View Village', 'group' => 'village'],
@@ -44,6 +47,12 @@ class PermissionSeeder extends Seeder
             ['name' => 'inbox.create', 'description' => 'Create Inbox', 'group' => 'inbox'],
             ['name' => 'inbox.edit', 'description' => 'Edit Inbox', 'group' => 'inbox'],
             ['name' => 'inbox.delete', 'description' => 'Delete Inbox', 'group' => 'inbox'],
+
+            // Master Data
+            ['name' => 'masterdata.view', 'description' => 'View Master Data', 'group' => 'master_data'],
+            ['name' => 'masterdata.create', 'description' => 'Create Master Data', 'group' => 'master_data'],
+            ['name' => 'masterdata.edit', 'description' => 'Edit Master Data', 'group' => 'master_data'],
+            ['name' => 'masterdata.delete', 'description' => 'Delete Master Data', 'group' => 'master_data'],
         ];
 
         foreach ($permissions as $permission) {

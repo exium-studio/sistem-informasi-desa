@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Public\PublicRequestController;
 use App\Http\Controllers\Web\Dashboard\AnnouncementController;
 use App\Http\Controllers\Web\Dashboard\FacilityController;
 use App\Http\Controllers\Web\Dashboard\FundMutationController;
@@ -24,6 +25,21 @@ Route::middleware(['custom.throttle:5,1'])->group(function () {
 Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 	Route::get('/logout', [LoginController::class, 'logout'])->middleware('web');
 	Route::get('/user-info', [LoginController::class, 'getUserInfo']);
+
+	Route::group(['prefix' => 'public-request', 'middleware' => ['verified.role:public']], function () {
+		Route::get('/get-religion', [PublicRequestController::class, 'getReligion']);
+		Route::get('/get-education', [PublicRequestController::class, 'getEducation']);
+		Route::get('/get-blood-type', [PublicRequestController::class, 'getBloodType']);
+		Route::get('/get-job-type', [PublicRequestController::class, 'getJobType']);
+		Route::get('/get-relationship-status', [PublicRequestController::class, 'getRelationshipStatus']);
+		Route::get('/get-married-status', [PublicRequestController::class, 'getMariedStatus']);
+		Route::get('/get-citizenship', [PublicRequestController::class, 'getCitizenship']);
+		Route::get('/get-income-source', [PublicRequestController::class, 'getIncomeSource']);
+		Route::get('/get-expense-category', [PublicRequestController::class, 'getExpenseCategory']);
+		Route::get('/get-document-type', [PublicRequestController::class, 'getDocumentType']);
+		Route::get('/get-facility', [PublicRequestController::class, 'getFacility']);
+		Route::get('/get-inventory', [PublicRequestController::class, 'getInventory']);
+	});
 
 	Route::group(['prefix' => 'web', 'middleware' => ['verified.role:web']], function () {
 		Route::group(['prefix' => 'sid'], function () {
