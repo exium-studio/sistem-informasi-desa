@@ -18,6 +18,7 @@ class VillageSeeder extends Seeder
             'image_file' => rand(1, 5),
             'name' => 'Desa Makmur Jaya',
             'summary' => 'Desa ini didirikan pada tahun 1890 oleh para pendatang dari wilayah sekitarnya.',
+            'gmaps' => 'https://maps.google.com',
             'vision' => 'Menjadi desa mandiri dan sejahtera.',
             'mission' => [
                 'Meningkatkan kesejahteraan masyarakat.',

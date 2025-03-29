@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade'); // Kepala Keluarga
             $table->string('no_kk', 16)->nullable()->unique();
+            $table->text('address');
+            $table->jsonb('location'); // Pin point
             $table->string('rt', 3);
             $table->string('rw', 3);
             $table->jsonb('village'); // Kelurahan

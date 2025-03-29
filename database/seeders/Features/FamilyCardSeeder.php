@@ -25,6 +25,11 @@ class FamilyCardSeeder extends Seeder
             FamilyCard::create([
                 'user_id' => $userId,
                 'no_kk' => str_pad(mt_rand(1000000000000000, 9999999999999999), 16, '0', STR_PAD_LEFT),
+                'address' => 'Alamat ' . chr(mt_rand(65, 90)),
+                'location' => [
+                    'lat' => mt_rand(-90, 90),
+                    'long' => mt_rand(-180, 180)
+                ],
                 'rt' => str_pad(mt_rand(1, 10), 3, '0', STR_PAD_LEFT),
                 'rw' => str_pad(mt_rand(1, 10), 3, '0', STR_PAD_LEFT),
                 'village' => [

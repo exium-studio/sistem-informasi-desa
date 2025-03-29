@@ -19,6 +19,7 @@ class FamilyCard extends Model
 
     protected $casts = [
         'user_id' => 'integer',
+        'location' => 'array',
         'village' => 'array',
         'sub_district' => 'array',
         'city_regency' => 'array',

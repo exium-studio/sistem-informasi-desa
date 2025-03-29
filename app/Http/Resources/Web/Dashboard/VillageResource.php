@@ -22,6 +22,7 @@ class VillageResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'summary' => $this->summary,
+            'gmaps' => $this->gmaps,
             'vision' => $this->vision,
             'mission' => $this->mission,
             'village_funds' => $this->village_funds,

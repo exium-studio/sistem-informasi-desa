@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('image_file')->nullable()->constrained('documents')->onDelete('cascade')->onUpdate('cascade');
             $table->string('name');
             $table->text('summary')->nullable();
+            $table->text('gmaps');
             $table->string('vision');
             $table->jsonb('mission');
             $table->integer('village_funds')->default(0); // Dana desa
