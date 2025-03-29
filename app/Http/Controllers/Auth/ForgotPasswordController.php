@@ -25,7 +25,7 @@ class ForgotPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_NOT_FOUND,
-                    'ACCOUNT_NOT_FOUND',
+                    'DATA_NOT_FOUND',
                     'Akun Tidak Ditemukan',
                     "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut.",
                 ),
@@ -81,7 +81,7 @@ class ForgotPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_NOT_FOUND,
-                    'ACCOUNT_NOT_FOUND',
+                    'DATA_NOT_FOUND',
                     'Akun Tidak Ditemukan',
                     "Akun dengan email '{$credentials['email']}' tidak ditemukan, pastikan anda sudah melakukan registrasi akun kedalam sistem kami dengan email tersebut.",
                 ),
@@ -95,7 +95,7 @@ class ForgotPasswordController extends Controller
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_BAD_REQUEST,
-                    'OTP_NOT_FOUND',
+                    'DATA_NOT_FOUND',
                     'OTP Tidak Ditemukan',
                     'Kode OTP tidak ditemukan. Silakan kirim ulang OTP.',
                 ),

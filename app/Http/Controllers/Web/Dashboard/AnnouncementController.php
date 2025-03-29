@@ -179,7 +179,7 @@ class AnnouncementController extends Controller
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_NOT_FOUND,
-                        'NOT_FOUND',
+                        'DATA_NOT_FOUND',
                         'Berhasil Mengambil Detail Data',
                         'Data pengumuman tidak ditemukan.',
                     ),
@@ -231,13 +231,18 @@ class AnnouncementController extends Controller
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_NOT_FOUND,
-                        'NOT_FOUND',
+                        'DATA_NOT_FOUND',
                         'Berhasil Mengambil Detail Data',
                         'Data pengumuman tidak ditemukan.',
                     ),
                     Response::HTTP_NOT_FOUND
                 );
             }
+
+            // TODO: Alur berubah, tambah payload delete_document_ids[]
+            // 1. lakukan upload dokumen baru dahulu
+            // 2. lakukan delete dokumen lama berdasarkan delete_document_ids[]
+            // 3. update request ('file') menjadi ('documents')
 
             $data = $request->validated();
 
@@ -345,7 +350,7 @@ class AnnouncementController extends Controller
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_NOT_FOUND,
-                        'NOT_FOUND',
+                        'DATA_NOT_FOUND',
                         'Berhasil Mengambil Detail Data',
                         'Data pengumuman tidak ditemukan.',
                     ),

@@ -1,25 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\Web\Dashboard;
+namespace App\Http\Controllers\Web\MasterData;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Web\Dashboard\CreateOfficialContactRequest;
-use App\Http\Requests\Web\Dashboard\UpdateOfficialContactRequest;
+use App\Http\Requests\Web\MasterData\CreateJobTypeRequest;
+use App\Http\Requests\Web\MasterData\UpdateJobTypeRequest;
 use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
-use App\Http\Resources\Web\Dashboard\OfficialContactResource;
-use App\Models\OfficialContact;
+use App\Models\JobType;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
-class OfficialContactController extends Controller
+class JobTypeController extends Controller
 {
     public function index()
     {
         try {
-            if (!Gate::allows('officialcontact.view')) {
+            if (!Gate::allows('masterdata.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -31,31 +30,25 @@ class OfficialContactController extends Controller
                 );
             }
 
-            $officialContact = OfficialContact::with('user')->get();
-            if ($officialContact->isEmpty()) {
-                return response()->json(
-                    new WithoutDataResource(
-                        Response::HTTP_OK,
-                        'SUCCESS_GET_DATA',
-                        'Berhasil Mengambil Data',
-                        'Data kontak official tidak ditemukan.',
-                    ),
-                    Response::HTTP_OK
-                );
-            }
-
-            return response()->json(
-                new WithDataResource(
+            $jobTypes = JobType::withTrashed()->get();
+            if ($jobTypes->isEmpty()) {
+                return response()->json(new WithoutDataResource(
                     Response::HTTP_OK,
                     'SUCCESS_GET_DATA',
                     'Berhasil Mengambil Data',
-                    'Data kontak official berhasil didapatkan.',
-                    OfficialContactResource::collection($officialContact)
-                ),
-                Response::HTTP_OK
-            );
+                    'Belum ada data jenis pekerjaan yang tersedia.'
+                ), Response::HTTP_OK);
+            }
+
+            return response()->json(new WithDataResource(
+                Response::HTTP_OK,
+                'SUCCESS_GET_DATA',
+                'Berhasil Mengambil Data',
+                'Data jenis pekerjaan berhasil didapatkan.',
+                $jobTypes
+            ), Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('| Dashboard Official Contact | - Error : ' . $e->getMessage());
+            Log::error('| JobType Index | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -68,10 +61,10 @@ class OfficialContactController extends Controller
         }
     }
 
-    public function store(CreateOfficialContactRequest $request)
+    public function store(CreateJobTypeRequest $request)
     {
         try {
-            if (!Gate::allows('officialcontact.create')) {
+            if (!Gate::allows('masterdata.create')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -83,30 +76,25 @@ class OfficialContactController extends Controller
                 );
             }
 
-            $data = $request->validated();
-
             DB::beginTransaction();
 
-            OfficialContact::create([
-                'contact_person' => $data['contact_person'],
-                'type' => $data['type'],
-                'value' => $data['value'],
+            JobType::create([
+                'label' => $request->label,
             ]);
 
             DB::commit();
-
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_CREATED,
                     'SUCCESS_CREATE_DATA',
-                    'Berhasil Membuat Data',
-                    'Data kontak official berhasil dibuat.',
+                    'Berhasil Menyimpan Data',
+                    "Data jenis pekerjaan '{$request->label}' berhasil ditambahkan."
                 ),
                 Response::HTTP_CREATED
             );
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('| Official Contact Store | - Error : ' . $e->getMessage());
+            Log::error('| JobType Store | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -122,7 +110,7 @@ class OfficialContactController extends Controller
     public function show($id)
     {
         try {
-            if (!Gate::allows('officialcontact.view')) {
+            if (!Gate::allows('masterdata.view')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -134,31 +122,25 @@ class OfficialContactController extends Controller
                 );
             }
 
-            $officialContact = OfficialContact::with('user')->find($id);
-            if (!$officialContact) {
-                return response()->json(
-                    new WithoutDataResource(
-                        Response::HTTP_NOT_FOUND,
-                        'DATA_NOT_FOUND',
-                        'Berhasil Mengambil Data',
-                        'Data kontak official tidak ditemukan.',
-                    ),
-                    Response::HTTP_NOT_FOUND
-                );
+            $jobType = JobType::withTrashed()->find($id);
+            if (!$jobType) {
+                return response()->json(new WithoutDataResource(
+                    Response::HTTP_NOT_FOUND,
+                    'DATA_NOT_FOUND',
+                    'Data Tidak Ditemukan',
+                    'Jenis pekerjaan dengan ID tersebut tidak ditemukan.'
+                ), Response::HTTP_NOT_FOUND);
             }
 
-            return response()->json(
-                new WithDataResource(
-                    Response::HTTP_OK,
-                    'SUCCESS_GET_DATA',
-                    'Berhasil Mengambil Data',
-                    'Data kontak official berhasil didapatkan.',
-                    new OfficialContactResource($officialContact)
-                ),
-                Response::HTTP_OK
-            );
+            return response()->json(new WithDataResource(
+                Response::HTTP_OK,
+                'SUCCESS_GET_DATA',
+                'Berhasil Mengambil Data',
+                "Data jenis pekerjaan '{$jobType->label}' berhasil didapatkan.",
+                $jobType
+            ), Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('| Official Contact Show | - Error : ' . $e->getMessage());
+            Log::error('| JobType Show | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -171,10 +153,10 @@ class OfficialContactController extends Controller
         }
     }
 
-    public function update(UpdateOfficialContactRequest $request, $id)
+    public function update(UpdateJobTypeRequest $request, $id)
     {
         try {
-            if (!Gate::allows('officialcontact.edit')) {
+            if (!Gate::allows('masterdata.edit')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -186,38 +168,35 @@ class OfficialContactController extends Controller
                 );
             }
 
-            $data = $request->validated();
-
             DB::beginTransaction();
 
-            $officialContact = OfficialContact::find($id);
-            if (!$officialContact) {
-                return response()->json(
-                    new WithoutDataResource(
-                        Response::HTTP_NOT_FOUND,
-                        'DATA_NOT_FOUND',
-                        'Berhasil Mengambil Data',
-                        'Data kontak official tidak ditemukan.',
-                    ),
-                    Response::HTTP_NOT_FOUND
-                );
+            $jobType = JobType::withTrashed()->find($id);
+            if (!$jobType) {
+                return response()->json(new WithoutDataResource(
+                    Response::HTTP_NOT_FOUND,
+                    'DATA_NOT_FOUND',
+                    'Data Tidak Ditemukan',
+                    'Jenis pekerjaan dengan ID tersebut tidak ditemukan.'
+                ), Response::HTTP_NOT_FOUND);
             }
 
-            $officialContact->update($data);
+            $jobType->update([
+                'label' => $request->label,
+            ]);
 
             DB::commit();
-
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_OK,
                     'SUCCESS_UPDATE_DATA',
                     'Berhasil Memperbarui Data',
-                    'Data kontak official berhasil diperbarui.',
+                    "Data jenis pekerjaan '{$jobType->label}' berhasil diperbarui."
                 ),
                 Response::HTTP_OK
             );
         } catch (\Exception $e) {
-            Log::error('| Official Contact Update | - Error : ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('| JobType Update | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -233,7 +212,7 @@ class OfficialContactController extends Controller
     public function destroy($id)
     {
         try {
-            if (!Gate::allows('officialcontact.delete')) {
+            if (!Gate::allows('masterdata.delete')) {
                 return response()->json(
                     new WithoutDataResource(
                         Response::HTTP_FORBIDDEN,
@@ -247,39 +226,85 @@ class OfficialContactController extends Controller
 
             DB::beginTransaction();
 
-            $officialContact = OfficialContact::find($id);
-            if (!$officialContact) {
-                return response()->json(
-                    new WithoutDataResource(
-                        Response::HTTP_NOT_FOUND,
-                        'DATA_NOT_FOUND',
-                        'Berhasil Mengambil Data',
-                        'Data kontak official tidak ditemukan.',
-                    ),
-                    Response::HTTP_OK
-                );
+            $jobType = JobType::find($id);
+            if (!$jobType) {
+                return response()->json(new WithoutDataResource(
+                    Response::HTTP_NOT_FOUND,
+                    'DATA_NOT_FOUND',
+                    'Data Tidak Ditemukan',
+                    'Jenis pekerjaan dengan ID tersebut tidak ditemukan.'
+                ), Response::HTTP_NOT_FOUND);
             }
 
-            $officialContact->delete();
+            $jobType->delete();
 
             DB::commit();
-
-            return response()->json(
-                new WithoutDataResource(
-                    Response::HTTP_OK,
-                    'SUCCESS_DELETE_DATA',
-                    'Berhasil Menghapus Data',
-                    'Data kontak official berhasil dihapus.',
-                ),
-                Response::HTTP_OK
-            );
+            return response()->json(new WithoutDataResource(
+                Response::HTTP_OK,
+                'SUCCESS_DELETE_DATA',
+                'Berhasil Menghapus Data',
+                "Data jenis pekerjaan '{$jobType->label}' berhasil dihapus."
+            ), Response::HTTP_OK);
         } catch (\Exception $e) {
-            Log::error('| Official Contact Destroy | - Error : ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('| JobType Destroy | - Error : ' . $e->getMessage());
             return response()->json(
                 new WithoutDataResource(
                     Response::HTTP_INTERNAL_SERVER_ERROR,
                     'ERROR_DELETE_DATA',
                     'Gagal Menghapus Data',
+                    'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
+                ),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function restore($id)
+    {
+        try {
+            if (!Gate::allows('masterdata.restore')) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_FORBIDDEN,
+                        'NO_ACCESS',
+                        'Tidak Memiliki Akses',
+                        'Anda tidak memiliki akses untuk mengakses halaman ini.',
+                    ),
+                    Response::HTTP_FORBIDDEN
+                );
+            }
+
+            DB::beginTransaction();
+
+            $jobType = JobType::onlyTrashed()->find($id);
+            if (!$jobType) {
+                return response()->json(new WithoutDataResource(
+                    Response::HTTP_NOT_FOUND,
+                    'DATA_NOT_FOUND',
+                    'Data Tidak Ditemukan',
+                    'Jenis pekerjaan dengan ID tersebut tidak ditemukan atau belum dihapus.'
+                ), Response::HTTP_NOT_FOUND);
+            }
+
+            $jobType->restore();
+
+            DB::commit();
+            return response()->json(new WithDataResource(
+                Response::HTTP_OK,
+                'SUCCESS_RESTORE_DATA',
+                'Berhasil Mengembalikan Data',
+                "Data jenis pekerjaan '{$jobType->label}' berhasil dikembalikan.",
+                $jobType
+            ), Response::HTTP_OK);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('| JobType Restore | - Error : ' . $e->getMessage());
+            return response()->json(
+                new WithoutDataResource(
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
+                    'ERROR_RESTORE_DATA',
+                    'Gagal Merestorasi Data',
                     'Terjadi kesalahan pada sistem, silahkan coba lagi nanti atau hubungi admin.',
                 ),
                 Response::HTTP_INTERNAL_SERVER_ERROR

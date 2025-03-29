@@ -53,6 +53,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'masterdata.create', 'description' => 'Create Master Data', 'group' => 'master_data'],
             ['name' => 'masterdata.edit', 'description' => 'Edit Master Data', 'group' => 'master_data'],
             ['name' => 'masterdata.delete', 'description' => 'Delete Master Data', 'group' => 'master_data'],
+            ['name' => 'masterdata.restore', 'description' => 'Restore Master Data', 'group' => 'master_data'],
         ];
 
         foreach ($permissions as $permission) {

@@ -12,6 +12,18 @@ use App\Http\Controllers\Web\Dashboard\OfficialContactController;
 use App\Http\Controllers\Web\Dashboard\PopulationController;
 use App\Http\Controllers\Web\Dashboard\VillageIndexController;
 use App\Http\Controllers\Web\InboxController;
+use App\Http\Controllers\Web\MasterData\BloodTypeController;
+use App\Http\Controllers\Web\MasterData\CitizenshipController;
+use App\Http\Controllers\Web\MasterData\DocumentTypeController;
+use App\Http\Controllers\Web\MasterData\EducationController;
+use App\Http\Controllers\Web\MasterData\ExpenseCategoryController;
+use App\Http\Controllers\Web\MasterData\FacilityController as MasterDataFacilityController;
+use App\Http\Controllers\Web\MasterData\IncomeSourceController;
+use App\Http\Controllers\Web\MasterData\InventoryController as MasterDataInventoryController;
+use App\Http\Controllers\Web\MasterData\JobTypeController;
+use App\Http\Controllers\Web\MasterData\MarriedStatusController;
+use App\Http\Controllers\Web\MasterData\RelationshipStatusController;
+use App\Http\Controllers\Web\MasterData\ReligionController;
 use Illuminate\Support\Facades\Route;
 
 // Login Section
@@ -59,6 +71,44 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 				Route::post('/fund-mutation', [FundMutationController::class, 'index']);
 				Route::post('/fund-mutation-income', [FundMutationController::class, 'getIncomePerSource']);
 				Route::post('/fund-mutation-expense', [FundMutationController::class, 'getExpensePerCategory']);
+			});
+
+			Route::group(['prefix' => 'master-data'], function () {
+				Route::apiResource('/religion', ReligionController::class);
+				Route::post('/religion/{id}/restore', [ReligionController::class, 'restore']);
+
+				Route::apiResource('/education', EducationController::class);
+				Route::post('/education/{id}/restore', [EducationController::class, 'restore']);
+
+				Route::apiResource('/blood-type', BloodTypeController::class);
+				Route::post('/blood-type/{id}/restore', [BloodTypeController::class, 'restore']);
+
+				Route::apiResource('/job-type', JobTypeController::class);
+				Route::post('/job-type/{id}/restore', [JobTypeController::class, 'restore']);
+
+				Route::apiResource('/relationship-status', RelationshipStatusController::class);
+				Route::post('/relationship-status/{id}/restore', [RelationshipStatusController::class, 'restore']);
+
+				Route::apiResource('/married-status', MarriedStatusController::class);
+				Route::post('/married-status/{id}/restore', [MarriedStatusController::class, 'restore']);
+
+				Route::apiResource('/citizenship', CitizenshipController::class);
+				Route::post('/citizenship/{id}/restore', [CitizenshipController::class, 'restore']);
+
+				Route::apiResource('/income-source', IncomeSourceController::class);
+				Route::post('/income-source/{id}/restore', [IncomeSourceController::class, 'restore']);
+
+				Route::apiResource('/expense-category', ExpenseCategoryController::class);
+				Route::post('/expense-category/{id}/restore', [ExpenseCategoryController::class, 'restore']);
+
+				Route::apiResource('/document-type', DocumentTypeController::class);
+				Route::post('/document-type/{id}/restore', [DocumentTypeController::class, 'restore']);
+
+				Route::apiResource('/facility', MasterDataFacilityController::class);
+				Route::post('/facility/{id}/restore', [MasterDataFacilityController::class, 'restore']);
+
+				Route::apiResource('/inventory', MasterDataInventoryController::class);
+				Route::post('/inventory/{id}/restore', [MasterDataInventoryController::class, 'restore']);
 			});
 		});
 	});
