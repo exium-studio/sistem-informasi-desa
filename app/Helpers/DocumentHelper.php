@@ -51,4 +51,23 @@ class DocumentHelper
 
 		Document::whereIn('id', $documentIdsToDelete)->delete();
 	}
+
+	public static function deleteDocumentsAndNullify(mixed $model, string $documentField = 'document_id'): void
+	{
+		$documentIds = is_array($model->{$documentField})
+			? $model->{$documentField}
+			: json_decode($model->{$documentField}, true);
+
+		if (!empty($documentIds)) {
+			$fileIds = Document::whereIn('id', $documentIds)->pluck('file_id')->toArray();
+
+			$model->update([$documentField => null]);
+
+			if (!empty($fileIds)) {
+				StorageServerHelper::deleteFromServer($fileIds);
+			}
+
+			Document::whereIn('id', $documentIds)->delete();
+		}
+	}
 }

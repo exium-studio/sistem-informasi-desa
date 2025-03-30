@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web\Dashboard;
 
-use App\Helpers\StorageServerHelper;
+use App\Helpers\DocumentHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Web\Dashboard\CreateAnnouncementRequest;
 use App\Http\Requests\Web\Dashboard\UpdateAnnouncementRequest;
@@ -10,7 +10,6 @@ use App\Http\Resources\Templates\Response\WithDataResource;
 use App\Http\Resources\Templates\Response\WithoutDataResource;
 use App\Http\Resources\Web\Dashboard\AnnouncementResource;
 use App\Models\Announcement;
-use App\Models\Document;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -91,39 +90,11 @@ class AnnouncementController extends Controller
 
             $documentIds = [];
 
-            if ($request->hasFile('file') && is_array($request->file('file'))) {
-                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('file'));
-
-                // Debugging struktur response
-                // Log::info('Struktur response upload file:', $uploadedFiles);
-
-                // Pastikan response berupa array berisi dokumen
-                if (is_array($uploadedFiles) && count($uploadedFiles) > 0) {
-                    foreach ($uploadedFiles as $uploadedFile) {
-                        if (is_array($uploadedFile) && isset($uploadedFile['file_id'])) {
-                            $document = Document::create([
-                                'uploaded_by' => auth()->user()->id,
-                                'document_status_id' => 2,
-                                'verified_by' => auth()->user()->id,
-                                'file_id' => $uploadedFile['file_id'],
-                                'file_name' => $uploadedFile['filename'],
-                                'file_path' => $uploadedFile['url'],
-                                'file_mime_type' => $uploadedFile['mime_type'],
-                                'file_size' => $uploadedFile['size'],
-                                'reason' => null
-                            ]);
-
-                            $documentIds[] = $document->id;
-                        } else {
-                            Log::error('Gagal menyimpan dokumen. Tidak ada file_id dalam response.', [$uploadedFile]);
-                        }
-                    }
-                } else {
-                    Log::error('Format response upload file tidak sesuai.', [$uploadedFiles]);
-                }
+            if ($request->hasFile('documents') && is_array($request->file('documents'))) {
+                $documentIds = DocumentHelper::uploadDocuments($request->file('documents'));
             }
 
-            Announcement::create([
+            $announcement = Announcement::create([
                 'created_by'   => auth()->user()->id,
                 'title'        => $data['title'],
                 'description'  => $data['description'],
@@ -140,7 +111,7 @@ class AnnouncementController extends Controller
                     Response::HTTP_CREATED,
                     'SUCCESS_CREATE_ANNOUNCEMENT',
                     'Pengumuman berhasil dibuat',
-                    'Pengumuman telah disimpan dengan sukses.',
+                    "Data pengumuman '{$announcement->title}' telah disimpan dengan sukses.",
                 ),
                 Response::HTTP_CREATED
             );
@@ -239,69 +210,58 @@ class AnnouncementController extends Controller
                 );
             }
 
-            // TODO: Alur berubah, tambah payload delete_document_ids[]
-            // 1. lakukan upload dokumen baru dahulu
-            // 2. lakukan delete dokumen lama berdasarkan delete_document_ids[]
-            // 3. update request ('file') menjadi ('documents')
-
             $data = $request->validated();
+
+            $existingDocumentIds = $announcement->document_id ?? [];
+            $deleteIds = $data['delete_document_ids'] ?? [];
+            $newUploads = $request->file('documents') ?? [];
+
+            // ✅ Safety: jika delete kosong & dokumen baru full, asumsikan ingin overwrite semua
+            if (empty($deleteIds) && count($newUploads) === 3 && !empty($existingDocumentIds)) {
+                $deleteIds = $existingDocumentIds;
+                $data['delete_document_ids'] = $deleteIds;
+            }
+
+            // ✅ Validasi jumlah total dokumen (existing - delete + new) ≤ 3
+            $remainingDocs = array_values(array_diff($existingDocumentIds, $deleteIds));
+            $totalAfter = count($remainingDocs) + count($newUploads);
+
+            if ($totalAfter > 3) {
+                return response()->json(
+                    new WithoutDataResource(
+                        Response::HTTP_BAD_REQUEST,
+                        'TOO_MANY_DOCUMENTS',
+                        'Terlalu Banyak Dokumen',
+                        "Jumlah total dokumen setelah update melebihi batas maksimum (maksimal 3)."
+                    ),
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
             DB::beginTransaction();
 
-            $documentIds = [];
-
-            if ($request->hasFile('file') && is_array($request->file('file'))) {
-                $uploadedFiles = StorageServerHelper::uploadToServer($request->file('file'));
-
-                // Debugging struktur response
-                // Log::info('Struktur response upload file:', $uploadedFiles);
-
-                // Pastikan response berupa array berisi dokumen
-                if (is_array($uploadedFiles) && count($uploadedFiles) > 0) {
-                    foreach ($uploadedFiles as $uploadedFile) {
-                        if (is_array($uploadedFile) && isset($uploadedFile['file_id'])) {
-                            $document = Document::create([
-                                'uploaded_by' => auth()->user()->id,
-                                'document_status_id' => 2,
-                                'verified_by' => auth()->user()->id,
-                                'file_id' => $uploadedFile['file_id'],
-                                'file_name' => $uploadedFile['filename'],
-                                'file_path' => $uploadedFile['url'],
-                                'file_mime_type' => $uploadedFile['mime_type'],
-                                'file_size' => $uploadedFile['size'],
-                                'reason' => null
-                            ]);
-
-                            $documentIds[] = $document->id;
-                        } else {
-                            Log::error('Gagal menyimpan dokumen. Tidak ada file_id dalam response.', [$uploadedFile]);
-                        }
-                    }
-                } else {
-                    Log::error('Format response upload file tidak sesuai.', [$uploadedFiles]);
-                }
-
-                $existingDocumentIds = $announcement->document_id ?? [];
-
-                if (!empty($existingDocumentIds)) {
-                    $fileIds = Document::whereIn('id', $existingDocumentIds)->pluck('file_id')->toArray();
-
-                    if (!empty($fileIds)) {
-                        StorageServerHelper::deleteFromServer($fileIds);
-                    }
-
-                    Document::whereIn('id', $existingDocumentIds)->delete();
-                }
+            // ✅ Hapus dokumen lama jika ada
+            if (!empty($deleteIds)) {
+                DocumentHelper::deleteDocuments($deleteIds);
+                $existingDocumentIds = array_values(array_diff($existingDocumentIds, $deleteIds));
             }
 
-            // Update pengumuman
+            // ✅ Upload dokumen baru
+            $newDocumentIds = [];
+            if (!empty($newUploads)) {
+                $newDocumentIds = DocumentHelper::uploadDocuments($newUploads);
+            }
+
+            $finalDocumentIds = array_merge($existingDocumentIds, $newDocumentIds);
+
+            // ✅ Update data pengumuman
             $announcement->update([
                 'title'        => $data['title'],
                 'description'  => $data['description'],
                 'location'     => $data['location'] ?? null,
                 'published_at' => $data['startDateTime'] ?? null,
                 'expires_at'   => $data['endDateTime'] ?? null,
-                'document_id'  => $documentIds ?: $announcement->document_id,
+                'document_id'  => $finalDocumentIds ?: null,
             ]);
 
             DB::commit();
@@ -311,7 +271,7 @@ class AnnouncementController extends Controller
                     Response::HTTP_OK,
                     'SUCCESS_UPDATE_ANNOUNCEMENT',
                     'Pengumuman berhasil diperbarui',
-                    'Pengumuman telah berhasil diperbarui.'
+                    "Data pengumuman '{$announcement->title}' telah berhasil diperbarui."
                 ),
                 Response::HTTP_OK
             );
@@ -360,23 +320,8 @@ class AnnouncementController extends Controller
 
             DB::beginTransaction();
 
-            $documentIds = is_array($announcement->document_id)
-                ? $announcement->document_id
-                : json_decode($announcement->document_id, true);
-
-            if (!empty($documentIds)) {
-                $fileIds = Document::whereIn('id', $documentIds)->pluck('file_id')->toArray();
-
-                $announcement->update([
-                    'document_id' => null
-                ]);
-
-                if (!empty($fileIds)) {
-                    StorageServerHelper::deleteFromServer($fileIds);
-                }
-
-                Document::whereIn('id', $documentIds)->delete();
-            }
+            // ✅ Gunakan helper untuk hapus dokumen + nullify document_id
+            DocumentHelper::deleteDocumentsAndNullify($announcement);
 
             $announcement->delete();
 

@@ -59,6 +59,7 @@ Route::middleware(['auth:sanctum', 'custom.throttle:60,1'])->group(function () {
 			Route::get('/inbox-unread', [InboxController::class, 'unreadCount']);
 			Route::post('/inbox-update', [InboxController::class, 'update']);
 
+			// TODO: Test semua master-data
 			Route::group(['prefix' => 'dashboard'], function () {
 				Route::get('/population', [PopulationController::class, 'index']);
 				Route::post('/population-growth', [PopulationController::class, 'growthPerYear']);

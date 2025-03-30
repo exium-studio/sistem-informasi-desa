@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->jsonb('document_id')->nullable();
+            $table->jsonb('document_id')->nullable(); // Max 3 file
             $table->string('title');
             $table->text('description');
             $table->jsonb('location')->nullable();

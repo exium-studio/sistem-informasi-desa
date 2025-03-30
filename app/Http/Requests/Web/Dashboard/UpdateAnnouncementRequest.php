@@ -26,8 +26,10 @@ class UpdateAnnouncementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['nullable', 'array'],
-            'file.*' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'documents' => ['nullable', 'array', 'max:3'],
+            'documents.*' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'delete_document_ids' => ['nullable', 'array'],
+            'delete_document_ids.*' => ['nullable', 'integer'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'location' => ['nullable', 'array'],
@@ -39,20 +41,23 @@ class UpdateAnnouncementRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'file.array' => 'Dokumen harus berupa array.',
-            'file.*.file' => 'Setiap dokumen harus berupa file yang valid.',
-            'file.*.mimes' => 'Setiap dokumen harus berupa file PDF.',
-            'file.*.max' => 'Setiap dokumen tidak boleh lebih dari 10 MB.',
-            'title.required' => 'Judul tidak boleh kosong.',
-            'title.string' => 'Judul harus berupa string.',
-            'title.max' => 'Judul tidak boleh lebih dari 255 karakter.',
-            'description.required' => 'Deskripsi tidak boleh kosong.',
-            'description.string' => 'Deskripsi harus berupa string.',
+            'documents.array' => 'Dokumen harus berupa array.',
+            'documents.max' => 'Maksimal hanya boleh mengunggah 3 dokumen.',
+            'documents.*.file' => 'Setiap dokumen harus berupa file yang valid.',
+            'documents.*.mimes' => 'Setiap dokumen harus berupa file PDF.',
+            'documents.*.max' => 'Setiap dokumen tidak boleh lebih dari 10 MB.',
+            'delete_document_ids.array' => 'Daftar ID dokumen yang dihapus harus berupa array.',
+            'delete_document_ids.*.integer' => 'Setiap ID dokumen yang dihapus harus berupa angka.',
+            'title.required' => 'Judul pengumuman tidak boleh kosong.',
+            'title.string' => 'Judul pengumuman harus berupa string.',
+            'title.max' => 'Judul pengumuman tidak boleh lebih dari 255 karakter.',
+            'description.required' => 'Deskripsi pengumuman tidak boleh kosong.',
+            'description.string' => 'Deskripsi pengumuman harus berupa string.',
             'location.array' => 'Lokasi harus berupa array.',
-            'startDateTime.required' => 'Tanggal publikasi tidak boleh kosong.',
-            'startDateTime.date' => 'Tanggal publikasi harus berupa tanggal.',
-            'endDateTime.required' => 'Tanggal kadaluarsa tidak boleh kosong.',
-            'endDateTime.date' => 'Tanggal kadaluarsa harus berupa tanggal.',
+            'startDateTime.required' => 'Tanggal publikasi pengumuman tidak boleh kosong.',
+            'startDateTime.date' => 'Tanggal publikasi pengumuman harus berupa tanggal.',
+            'endDateTime.required' => 'Tanggal kadaluarsa pengumuman tidak boleh kosong.',
+            'endDateTime.date' => 'Tanggal kadaluarsa pengumuman harus berupa tanggal.',
         ];
     }
 

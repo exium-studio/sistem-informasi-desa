@@ -212,7 +212,13 @@ class InventoryController extends Controller
             $deleteIds = $data['delete_document_ids'] ?? [];
             $newUploads = $request->file('documents') ?? [];
 
-            // ✅ VALIDASI jumlah total dokumen baru + yang masih ada (setelah delete)
+            // ✅ Safety: jika delete kosong & dokumen baru full, asumsikan ingin overwrite semua
+            if (empty($deleteIds) && count($newUploads) === 3 && !empty($existingDocumentIds)) {
+                $deleteIds = $existingDocumentIds;
+                $data['delete_document_ids'] = $deleteIds;
+            }
+
+            // ✅ Validasi jumlah total dokumen (existing - delete + new) ≤ 3
             $remainingDocs = array_values(array_diff($existingDocumentIds, $deleteIds));
             $totalAfter = count($remainingDocs) + count($newUploads);
 
@@ -230,7 +236,7 @@ class InventoryController extends Controller
 
             DB::beginTransaction();
 
-            // ✅ Hapus dokumen jika ada
+            // ✅ Hapus dokumen lama jika ada
             if (!empty($deleteIds)) {
                 DocumentHelper::deleteDocuments($deleteIds);
                 $existingDocumentIds = array_values(array_diff($existingDocumentIds, $deleteIds));
